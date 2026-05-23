@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>望獅閣｜百業俠境</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,sans-serif;background:#070604;color:#ead8ad}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 78% 0%,rgba(214,162,74,.22),transparent 24%),repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 1px,transparent 1px 8px)}
+.app{max-width:1280px;margin:auto;min-height:100vh;padding:0 14px 24px}
+.hero{height:230px;position:relative;overflow:hidden;border:1px solid rgba(214,162,74,.45);border-top:0;background:linear-gradient(90deg,rgba(235,218,181,.95),rgba(196,146,65,.42) 50%,rgba(0,0,0,.82)),linear-gradient(135deg,#d7c097,#160f0a);box-shadow:0 18px 45px rgba(0,0,0,.38)}
+.hero:before{content:"百業俠境";position:absolute;left:5%;top:48px;font-size:76px;font-weight:900;letter-spacing:10px;color:#16100a;text-shadow:0 2px 0 rgba(255,255,255,.25)}
+.hero:after{content:"報名系統";position:absolute;left:8%;top:132px;font-size:34px;font-weight:900;letter-spacing:7px;color:#23180d}
+.brand{position:absolute;top:13px;left:50%;transform:translateX(-50%);color:#f1ce86;font-size:28px;font-weight:900;letter-spacing:5px}
+.art{position:absolute;right:7%;top:46px;font-size:112px;opacity:.36;filter:drop-shadow(0 0 20px #000)}
+.flag{position:absolute;right:3%;top:34px;color:#e6bd70;font-size:58px;font-weight:900}
+.panel{position:relative;margin-top:16px;padding:22px;border:1px solid rgba(214,162,74,.45);border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(0,0,0,.36));box-shadow:0 16px 36px rgba(0,0,0,.30)}
+.panel:before{content:"";position:absolute;top:-1px;left:22px;right:22px;height:1px;background:linear-gradient(90deg,transparent,#f1ce86,transparent)}
+.title{color:#f1ce86;font-size:28px;font-weight:900;margin-bottom:20px;letter-spacing:2px}
+.title small{float:right;color:#b8945b;font-size:14px;margin-top:10px}
+.form{display:grid;grid-template-columns:1.1fr 1.9fr 1fr 1.45fr;gap:22px;align-items:start}
+label{display:block;color:#e3bc71;font-size:17px;font-weight:800;margin-bottom:10px}
+input,select,button{font-family:inherit;border-radius:6px;outline:none}
+input,select{width:100%;height:46px;background:#080604;border:1px solid rgba(214,162,74,.48);color:#ead8ad;font-size:17px;padding:0 14px}
+.schoolBox{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.schoolBtn{height:36px;border:1px solid rgba(255,255,255,.12);color:white;font-weight:800;cursor:pointer;opacity:.75}
+.schoolBtn.active{outline:2px solid #f1ce86;opacity:1}
+.green{background:#39783a}.red{background:#8d322a}.purple{background:#60458a}.blue{background:#315b94}.lightgreen{background:#77ac43}.yellow{background:#a07d18}
+.timeBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.timeBtns button{height:44px;border:1px solid rgba(214,162,74,.48);background:#0a0806;color:#f2cc80;font-size:17px;cursor:pointer}
+.timeBtns button.active{background:linear-gradient(#e9c47d,#9f6522);color:#160d06;font-weight:900}
+.submit{display:block;width:320px;height:58px;margin:22px auto 0;border:0;background:linear-gradient(#e9c47d,#9f6522);color:#160d06;font-size:27px;font-weight:900;cursor:pointer}
+.teams{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.team{border:1px solid rgba(214,162,74,.45);border-radius:8px;padding:16px 14px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(0,0,0,.35));min-height:430px}
+.team.dragover{outline:3px dashed #f1ce86}
+.teamHead{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;margin-bottom:14px}
+.teamName{color:#f1ce86;font-size:26px;font-weight:900;text-align:center}
+.count{color:#e7c17b;font-size:20px;font-weight:800}
+.status{padding:5px 12px;border-radius:5px;background:#234d25;color:#9ee28b;font-weight:800}
+.status.full{background:#8d1512;color:#fff}
+.row{height:38px;display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;margin-bottom:4px;padding-right:8px;border-bottom:1px solid rgba(214,162,74,.12);border-radius:4px;background:rgba(255,255,255,.025);color:#e6d3aa;font-size:17px}
+.num{color:#e8b75f;text-align:center}.empty{color:#6e5f45}
+.tags{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.tag{color:white;border-radius:4px;padding:3px 8px;font-size:13px;font-weight:800}
+.del{display:none;width:24px;height:24px;border:0;border-radius:50%;background:#7c2b22;color:white;cursor:pointer;margin-left:4px}
+.adminOn .del{display:inline-block}
+.adminLogin{display:grid;grid-template-columns:260px 170px 1fr;gap:14px;align-items:end}
+.loginBtn{height:46px;border:0;background:linear-gradient(#e9c47d,#9f6522);color:#160d06;font-size:18px;font-weight:900;cursor:pointer}
+.help{min-height:100px;border:1px solid rgba(214,162,74,.28);background:linear-gradient(90deg,rgba(0,0,0,.22),rgba(0,0,0,.62));padding:18px 24px;color:#d8b777;line-height:1.8}
+.footer{text-align:center;color:#9c7c48;letter-spacing:8px;margin:22px 0 0}
+@media(max-width:900px){.app{padding:0 8px 18px}.hero{height:160px}.hero:before{font-size:42px;top:38px}.hero:after{font-size:21px;top:95px}.brand{font-size:22px}.art{font-size:66px}.flag{font-size:42px}.form,.teams,.adminLogin{grid-template-columns:1fr}.schoolBox{grid-template-columns:repeat(3,1fr)}.submit{width:100%}.team{min-height:auto}.title small{float:none;display:block;margin-top:6px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="hero"><div class="brand">望獅閣</div><div class="art">🏇</div><div class="flag">俠</div></section>
+  <section class="panel">
+    <div class="title">我要報名 <small>報名後將自動分配至車隊（每隊10人）</small></div>
+    <div class="form">
+      <div><label>角色名稱</label><input id="name" placeholder="請輸入角色名稱"></div>
+      <div><label>流派（可多選）</label><div id="schoolBox" class="schoolBox"></div></div>
+      <div><label>可打星期</label><select id="day"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option><option>星期六</option><option>星期日</option></select></div>
+      <div><label>可打時間</label><select id="time"><option>9:30</option><option>10:00</option><option>10:30</option><option>11:00</option></select><div class="timeBtns"><button class="active" onclick="setTime(this,'9:30')">9:30</button><button onclick="setTime(this,'10:00')">10:00</button><button onclick="setTime(this,'10:30')">10:30</button><button onclick="setTime(this,'11:00')">11:00</button></div></div>
+    </div><button class="submit" onclick="addPlayer()">確認報名</button>
+  </section>
+  <section class="panel"><div class="title">分隊表 <small>未滿 10 人顯示招募中，滿 10 人顯示已滿</small></div><div id="teams" class="teams"></div></section>
+  <section class="panel"><div class="adminLogin"><div><label>管理員密碼</label><input id="adminPw" type="password" placeholder="請輸入管理員密碼"></div><button class="loginBtn" onclick="login()">登入管理</button><div class="help"><b>管理功能說明</b><br>登入後可拖曳玩家至其他車隊，也可刪除報名玩家。</div></div></section>
+  <div class="footer">望獅閣 百業俠境報名系統</div>
+</div>
+<script>
+const MAX=10,PASSWORD="yanyun888";
+const schools=[["霖霖","green"],["雙扇","green"],["八方奶","green"],["威威","red"],["陌奶","red"],["唐陌","red"],["影影","purple"],["風風","purple"],["虹虹","blue"],["雙劍","blue"],["玉玉","lightgreen"],["鈞鈞","yellow"]];
+let selected=[],admin=false,dragging=null,players=JSON.parse(localStorage.getItem("wangshi_xj_final_clean")||"[]");
+function init(){schoolBox.innerHTML=schools.map(([n,c])=>`<button class="schoolBtn ${c}" onclick="toggleSchool(event,'${n}')">${n}</button>`).join("");render();}
+function toggleSchool(e,n){e.preventDefault();selected=selected.includes(n)?selected.filter(x=>x!==n):[...selected,n];[...document.querySelectorAll(".schoolBtn")].forEach(btn=>btn.classList.toggle("active",selected.includes(btn.textContent)));}
+function setTime(btn,t){time.value=t;document.querySelectorAll(".timeBtns button").forEach(b=>b.classList.remove("active"));btn.classList.add("active");}
+function cls(n){return (schools.find(x=>x[0]===n)||["","blue"])[1];}
+function count(g){return players.filter(p=>p.group===g).length;}
+function nextGroup(){for(let i=1;i<=3;i++){if(count(i)<MAX)return i;}return 3;}
+function save(){localStorage.setItem("wangshi_xj_final_clean",JSON.stringify(players));}
+function addPlayer(){const n=name.value.trim();if(!n)return alert("請輸入角色名稱");if(selected.length===0)return alert("請至少選一個流派");players.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),name:n,schools:[...selected],group:nextGroup()});name.value="";selected=[];document.querySelectorAll(".schoolBtn").forEach(b=>b.classList.remove("active"));save();render();}
+function render(){document.body.classList.toggle("adminOn",admin);teams.innerHTML="";for(let g=1;g<=3;g++){const list=players.filter(p=>p.group===g);const full=list.length>=MAX;const box=document.createElement("div");box.className="team";box.ondragover=e=>{if(admin){e.preventDefault();box.classList.add("dragover");}};box.ondragleave=()=>box.classList.remove("dragover");box.ondrop=e=>drop(e,g,box);let rows="";for(let i=0;i<MAX;i++){const p=list[i];rows+=p?`<div class="row" draggable="${admin}" ondragstart="dragging='${p.id}'"><div class="num">${i+1}</div><div>${p.name}</div><div class="tags">${p.schools.map(s=>`<span class="tag ${cls(s)}">${s}</span>`).join("")}<button class="del" onclick="del('${p.id}')">×</button></div></div>`:`<div class="row"><div class="num">${i+1}</div><div class="empty">空位</div><div></div></div>`;}box.innerHTML=`<div class="teamHead"><div class="teamName">第${g}組</div><div class="count">(${list.length}/10)</div><div class="status ${full?"full":""}">${full?"已滿":"招募中"}</div></div>${rows}`;teams.appendChild(box);}}
+function login(){if(adminPw.value===PASSWORD){admin=true;render();alert("管理員登入成功");}else alert("密碼錯誤");}
+function drop(e,g,box){e.preventDefault();box.classList.remove("dragover");const p=players.find(x=>x.id===dragging);if(!p)return;if(count(g)>=MAX&&p.group!==g)return alert("這組已滿");p.group=g;dragging=null;save();render();}
+function del(id){if(!admin)return;if(confirm("確定刪除？")){players=players.filter(p=>p.id!==id);save();render();}}
+init();
+</script>
+</body>
+</html>
