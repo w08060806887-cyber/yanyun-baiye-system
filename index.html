@@ -103,7 +103,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,san
         <label style="margin:0">開始時間</label><input id="arrangeTime" value="20:30" style="width:120px">
         <button style="width:140px" onclick="autoArrangeBaiye()">自動排入</button>
         <button class="danger" style="width:140px" onclick="clearArrangeBaiye()">清空編排</button>
-        <button style="width:160px" onclick="copyArrangeText()">複製文字版</button>
+        <button style="width:160px" onclick="copyVerticalText()">複製直式</button>
+        <button style="width:160px" onclick="copyHorizontalText()">複製橫式</button>
+        <span id="syncStatus" class="note" style="margin:0">同步：本機模式</span>
       </div>
       <div class="note">報名玩家會從報名頁同步過來。管理員可以在下方把人分到 A1 / A2 / A3 / B1 / B2 / B3。</div>
     </section>
@@ -113,13 +115,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,san
     <section class="card">
       <div class="title">手動調整</div>
       <div style="overflow-x:auto"><table class="assignTable"><thead><tr><th>角色名稱</th><th>流派</th><th>戰力</th><th>位置</th></tr></thead><tbody id="assignTable"></tbody></table></div>
-      <textarea id="copyBox" class="copyBox" readonly placeholder="按『複製文字版』會產生可貼到 Discord 的名單"></textarea>
+      <textarea id="copyBox" class="copyBox" readonly placeholder="按上方按鈕可分別產生直式/橫式名單"></textarea>
     </section>
   </div>
 </section>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);render();renderBaiye();renderArrangeBaiye();}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);initBaiyeCloud();render();renderBaiye();renderArrangeBaiye();}
 const MAX=10,PASSWORD='yanyun888';
 const schoolColors={'霖霖':'green','雙扇':'green','八方奶':'green','威威':'red','陌奶':'red','唐陌':'red','影影':'purple','風風':'purple','虹虹':'blue','雙劍':'blue','玉玉':'lightgreen','鈞鈞':'yellow'};
 let admin=false,dragging=null;let players=JSON.parse(localStorage.getItem('wangshi_xiajing_working_v5')||'[]');
@@ -130,6 +134,34 @@ function login(){if(adminPw.value===PASSWORD){admin=true;render();alert('管理�
 const BAIYE_MAX=30,BAIYE_PASSWORD='yanyun888';
 let baiyeAdmin=false;
 let baiyePlayers=JSON.parse(localStorage.getItem('wangshi_baiye_signup_v1')||'[]');
+const firebaseConfig={
+  apiKey:'',
+  authDomain:'',
+  projectId:'',
+  storageBucket:'',
+  messagingSenderId:'',
+  appId:''
+};
+let baiyeCloudEnabled=false,baiyeDoc=null,baiyeApplyingRemote=false;
+function initBaiyeCloud(){
+  try{
+    if(!firebaseConfig.apiKey||!firebaseConfig.projectId){setSyncStatus('同步：本機模式');return}
+    firebase.initializeApp(firebaseConfig);
+    const db=firebase.firestore();
+    baiyeDoc=db.collection('wangshi').doc('baiyeBattle');
+    baiyeCloudEnabled=true;setSyncStatus('同步：雲端連線中');
+    baiyeDoc.onSnapshot(snap=>{
+      if(snap.exists&&Array.isArray(snap.data().players)){
+        baiyeApplyingRemote=true;
+        baiyePlayers=snap.data().players;
+        localStorage.setItem('wangshi_baiye_signup_v1',JSON.stringify(baiyePlayers));
+        renderBaiye();renderArrangeBaiye();
+        baiyeApplyingRemote=false;setSyncStatus('同步：雲端即時同步');
+      }else{saveBaiye()}
+    },err=>{console.error(err);setSyncStatus('同步：雲端失敗，改本機')});
+  }catch(err){console.error(err);setSyncStatus('同步：雲端失敗，改本機')}
+}
+function setSyncStatus(t){const el=document.getElementById('syncStatus');if(el)el.innerText=t}
 function fmtTime(ts){const d=new Date(ts);const mm=String(d.getMonth()+1).padStart(2,'0');const dd=String(d.getDate()).padStart(2,'0');const hh=String(d.getHours()).padStart(2,'0');const mi=String(d.getMinutes()).padStart(2,'0');return `${mm}-${dd} ${hh}:${mi}`}
 function addBaiyePlayer(){
   const name=document.getElementById('baiyeName')?.value.trim();
@@ -141,7 +173,7 @@ function addBaiyePlayer(){
   if(baiyePlayers.length>=BAIYE_MAX)return alert('報名已滿 30 人');
   if(baiyePlayers.some(p=>p.name===name))return alert('這個角色已經報名過');
   baiyePlayers.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),name,school,power,time:Date.now(),slot:''});
-  localStorage.setItem('wangshi_baiye_signup_v1',JSON.stringify(baiyePlayers));
+  saveBaiye();
   document.getElementById('baiyeName').value='';document.getElementById('baiyeSchool').value='';document.getElementById('baiyePower').value='';
   renderBaiye();
 }
@@ -153,10 +185,10 @@ function renderBaiye(){
   table.innerHTML=baiyePlayers.map((p,i)=>`<tr><td>${p.name}</td><td><span class="tag ${cls(p.school)}">${p.school}</span></td><td>${Number(p.power).toLocaleString()}</td><td>${fmtTime(p.time)}</td><td class="baiyeAdminTools"><button class="danger" onclick="delBaiyePlayer('${p.id}')">刪除</button></td></tr>`).join('');
 }
 function loginBaiye(){if(document.getElementById('baiyeAdminPw').value===BAIYE_PASSWORD){baiyeAdmin=true;renderBaiye();alert('管理員登入成功')}else alert('密碼錯誤')}
-function delBaiyePlayer(id){if(!baiyeAdmin)return;if(confirm('確定刪除這筆報名？')){baiyePlayers=baiyePlayers.filter(p=>p.id!==id);localStorage.setItem('wangshi_baiye_signup_v1',JSON.stringify(baiyePlayers));renderBaiye();renderArrangeBaiye()}}
+function delBaiyePlayer(id){if(!baiyeAdmin)return;if(confirm('確定刪除這筆報名？')){baiyePlayers=baiyePlayers.filter(p=>p.id!==id);saveBaiye();renderBaiye();renderArrangeBaiye()}}
 
 const BAIYE_SLOTS=['A1','A2','A3','B1','B2','B3'];
-function saveBaiye(){localStorage.setItem('wangshi_baiye_signup_v1',JSON.stringify(baiyePlayers))}
+function saveBaiye(){localStorage.setItem('wangshi_baiye_signup_v1',JSON.stringify(baiyePlayers));if(baiyeCloudEnabled&&baiyeDoc&&!baiyeApplyingRemote){baiyeDoc.set({players:baiyePlayers,updatedAt:Date.now()},{merge:true}).catch(err=>{console.error(err);setSyncStatus('同步：寫入失敗')})}}
 function memberLine(p){return `<span><span class="tag ${cls(p.school)}">${p.school}</span>${p.name}</span><small>${Number(p.power||0).toLocaleString()}</small>`}
 function renderArrangeBaiye(){
   if(!document.getElementById('verticalArrange'))return;
@@ -182,18 +214,51 @@ function renderArrangeBaiye(){
 function setBaiyeSlot(id,slot){const p=baiyePlayers.find(x=>x.id===id);if(!p)return;p.slot=slot;saveBaiye();renderArrangeBaiye()}
 function autoArrangeBaiye(){let idx=0;baiyePlayers.forEach(p=>{if(!p.slot){p.slot=BAIYE_SLOTS[idx%BAIYE_SLOTS.length];idx++}});saveBaiye();renderArrangeBaiye()}
 function clearArrangeBaiye(){if(!confirm('確定清空百業戰編排？'))return;baiyePlayers.forEach(p=>p.slot='');saveBaiye();renderArrangeBaiye()}
-function renderCopyText(){
-  const box=document.getElementById('copyBox');if(!box)return;
+function slotTitle(slot){return slot+(slot==='A1'||slot==='B1'?'(左)':slot==='A2'||slot==='B2'?'(中)':'(右)')}
+function slotMembers(slot){return baiyePlayers.filter(p=>p.slot===slot).map(p=>`${p.school}：${p.name}`)}
+function buildVerticalText(){
   const date=document.getElementById('arrangeDate')?.value||'';const time=document.getElementById('arrangeTime')?.value||'';
-  let txt=`${date}　開始時間：${time}\n這是配對一！\n\n直式\n`;
-  txt+=BAIYE_SLOTS.map(slot=>`${slot}：${baiyePlayers.filter(p=>p.slot===slot).map(p=>`${p.school}：${p.name}`).join('、')||'空位'}`).join('\n');
-  txt+='\n\n橫式\n';
-  txt+=BAIYE_SLOTS.map(slot=>`${slot}：${baiyePlayers.filter(p=>p.slot===slot).map(p=>`${p.school}：${p.name}`).join('、')||'空位'}`).join('\n');
-  box.value=txt;
+  let txt=`${date}　開始時間：${time}
+這是配對一！
+
+直式
+`;
+  txt+=['A1','A2','A3'].map(slot=>`${slotTitle(slot)}
+${slotMembers(slot).join('
+')||'空位'}`).join('
+
+');
+  txt+='
+
+';
+  txt+=['B1','B2','B3'].map(slot=>`${slotTitle(slot)}
+${slotMembers(slot).join('
+')||'空位'}`).join('
+
+');
+  return txt;
 }
-function copyArrangeText(){renderCopyText();const box=document.getElementById('copyBox');box.select();document.execCommand('copy');alert('已複製編排名單')}
+function buildHorizontalText(){
+  const date=document.getElementById('arrangeDate')?.value||'';const time=document.getElementById('arrangeTime')?.value||'';
+  let txt=`${date}　開始時間：${time}
+這是配對一！
+
+橫式
+`;
+  txt+=BAIYE_SLOTS.map(slot=>`${slot}：${slotMembers(slot).join('、')||'空位'}`).join('
+');
+  return txt;
+}
+function renderCopyText(mode='vertical'){
+  const box=document.getElementById('copyBox');if(!box)return;
+  box.value=mode==='horizontal'?buildHorizontalText():buildVerticalText();
+}
+function copyTextValue(txt,label){const box=document.getElementById('copyBox');box.value=txt;box.select();document.execCommand('copy');alert(`已複製${label}`)}
+function copyVerticalText(){copyTextValue(buildVerticalText(),'直式編排')}
+function copyHorizontalText(){copyTextValue(buildHorizontalText(),'橫式編排')}
 
 
-render();renderBaiye();renderArrangeBaiye();
+
+initBaiyeCloud();render();renderBaiye();renderArrangeBaiye();
 document.addEventListener("input",e=>{if(e.target&&['arrangeDate','arrangeTime'].includes(e.target.id))renderCopyText()});
 </script></body></html>
