@@ -1826,4 +1826,153 @@ window.showPage = function(id){
 setTimeout(insertClearButtonsV25,800);
 </script>
 
+
+<script>
+/* V26_XIAJING_FIREBASE_SYNC */
+(function(){
+  const XJ_PATH='baiyeXiajing/players';
+  let xjSyncReady=false;
+  let xjSaving=false;
+
+  function xjLocalSaveV26(){
+    try{ localStorage.setItem('wangshi_xiajing_working_v5', JSON.stringify(players||[])); }catch(e){}
+  }
+  function xjToObjectV26(list){
+    const obj={};
+    (list||[]).forEach(p=>{
+      if(!p.id) p.id=Date.now().toString(36)+Math.random().toString(36).slice(2);
+      obj[p.id]={
+        id:p.id,
+        name:p.name||'',
+        schools:Array.isArray(p.schools)?p.schools:[],
+        day:p.day||'',
+        time:p.time||'',
+        group:p.group||1,
+        createdAt:p.createdAt||Date.now()
+      };
+    });
+    return obj;
+  }
+  function xjFromObjectV26(obj){
+    return Object.values(obj||{}).map(p=>({
+      id:p.id||'',
+      name:p.name||'',
+      schools:Array.isArray(p.schools)?p.schools:[],
+      day:p.day||'',
+      time:p.time||'',
+      group:p.group||1,
+      createdAt:p.createdAt||0
+    })).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  }
+  function xjDbReadyV26(){
+    try{return typeof warDb!=='undefined' && warDb && typeof warDb.ref==='function'}catch(e){return false}
+  }
+
+  const oldSaveV26 = window.save || save;
+  window.save = function(){
+    xjLocalSaveV26();
+    if(xjDbReadyV26() && xjSyncReady && !xjSaving){
+      xjSaving=true;
+      warDb.ref(XJ_PATH).set(xjToObjectV26(players)).finally(()=>{xjSaving=false;});
+    }
+  };
+  save = window.save;
+
+  function initXiajingSyncV26(){
+    if(!xjDbReadyV26()){
+      setTimeout(initXiajingSyncV26,500);
+      return;
+    }
+    const ref=warDb.ref(XJ_PATH);
+    ref.once('value').then(snap=>{
+      const remote=xjFromObjectV26(snap.val());
+      const local=Array.isArray(players)?players:[];
+      if(remote.length){
+        players=remote;
+        xjLocalSaveV26();
+        render();
+      }else if(local.length){
+        ref.set(xjToObjectV26(local));
+      }
+      xjSyncReady=true;
+
+      ref.on('value', s=>{
+        if(xjSaving)return;
+        players=xjFromObjectV26(s.val());
+        xjLocalSaveV26();
+        render();
+      });
+    }).catch(e=>{
+      console.error('百業俠境同步失敗',e);
+      alert('百業俠境同步失敗，請檢查 Firebase 規則');
+    });
+  }
+
+  // 覆蓋新增：寫入 Firebase
+  window.addPlayer = function(){
+    const n=document.getElementById('name').value.trim();
+    const schools=selectedSchools();
+    if(!n)return alert('請輸入角色名稱');
+    if(schools.length===0)return alert('請至少選一個流派');
+    players.push({
+      id:Date.now().toString(36)+Math.random().toString(36).slice(2),
+      name:n,
+      schools,
+      day:day.value,
+      time:time.value,
+      group:nextGroup(),
+      createdAt:Date.now()
+    });
+    document.getElementById('name').value='';
+    Array.from(schoolSelect.options).forEach(o=>o.selected=false);
+    save();
+    render();
+  };
+  addPlayer=window.addPlayer;
+
+  // 覆蓋拖曳分組：寫入 Firebase
+  window.drop = function(e,g,box){
+    e.preventDefault();
+    box.classList.remove('dragover');
+    const p=players.find(x=>x.id===dragging);
+    if(!p)return;
+    if(count(g)>=MAX&&p.group!==g)return alert('這組已滿');
+    p.group=g;
+    dragging=null;
+    save();
+    render();
+  };
+  drop=window.drop;
+
+  // 覆蓋刪除：寫入 Firebase
+  window.delPlayer = function(id){
+    if(!admin)return;
+    if(confirm('確定刪除？')){
+      players=players.filter(p=>p.id!==id);
+      save();
+      render();
+    }
+  };
+  delPlayer=window.delPlayer;
+
+  function addXiajingSyncStatusV26(){
+    const xj=document.getElementById('xjPage');
+    if(!xj || document.getElementById('xjSyncStatusV26'))return;
+    const h=xj.querySelector('.header');
+    if(h){
+      const div=document.createElement('div');
+      div.id='xjSyncStatusV26';
+      div.className='miniNote';
+      div.textContent='百業俠境已啟用 Firebase 多人同步';
+      h.appendChild(div);
+    }
+  }
+
+  setTimeout(function(){
+    addXiajingSyncStatusV26();
+    initXiajingSyncV26();
+  },1000);
+})();
+</script>
+
 </body></html>
