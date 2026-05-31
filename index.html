@@ -1370,4 +1370,115 @@ setTimeout(function(){
  }
 },300);
 </script>
+
+<script>
+/* V22_FIX_FIREBASE_MEMBERS_SYNC */
+(function(){
+  function safeKeyV22(name){
+    return String(name||'').trim().replace(/[.#$\[\]\/]/g,'_');
+  }
+  function normalizePTV22(v){
+    v=String(v||'').trim();
+    if(!v)return '';
+    const m=v.match(/^tp\s*0*(\d+)$/i) || v.match(/^pt\s*0*(\d+)$/i);
+    if(m)return 'PT'+String(m[1]).padStart(2,'0');
+    return v.toUpperCase();
+  }
+  function normalizeMemberV22(m){
+    return {
+      name:(m.name||'').trim(),
+      role:m.role||'',
+      identity:m.identity||'成員',
+      power:m.power||'',
+      friend:normalizePTV22(m.friend),
+      enabled:m.enabled||'是'
+    };
+  }
+  function objToListV22(obj){
+    return Object.values(obj||{}).map(normalizeMemberV22).filter(m=>m.name);
+  }
+  function listToObjV22(list){
+    const obj={};
+    (list||[]).map(normalizeMemberV22).filter(m=>m.name).forEach(m=>{ obj[safeKeyV22(m.name)] = m; });
+    return obj;
+  }
+  function localMembersV22(){
+    try{
+      const a=JSON.parse(localStorage.getItem('wangshi_baiye_members_v5')||'[]');
+      return Array.isArray(a)?a.map(normalizeMemberV22).filter(m=>m.name):[];
+    }catch(e){return []}
+  }
+  function saveLocalV22(list){
+    const clean=(list||[]).map(normalizeMemberV22).filter(m=>m.name);
+    localStorage.setItem('wangshi_baiye_members_v5', JSON.stringify(clean));
+    localStorage.setItem('membersV3', JSON.stringify(clean));
+    if(window.membersCacheV18) window.membersCacheV18=clean;
+    return clean;
+  }
+
+  let syncing=false;
+  let ready=false;
+
+  function dbReadyV22(){
+    try{ return typeof warDb !== 'undefined' && warDb && typeof warDb.ref === 'function'; }
+    catch(e){ return false; }
+  }
+
+  function patchStoreV22(){
+    const oldGet = window.getMembersV5;
+    window.getMembersV5 = function(){
+      if(window.membersCacheV18 && window.membersCacheV18.length) return window.membersCacheV18.map(normalizeMemberV22);
+      return (oldGet ? oldGet() : localMembersV22()).map(normalizeMemberV22);
+    };
+    window.loadMembersV5 = function(){ return window.getMembersV5(); };
+    window.saveMembersStoreV5 = function(list){
+      const clean=saveLocalV22(list);
+      if(dbReadyV22() && ready && !syncing){
+        syncing=true;
+        warDb.ref('members').set(listToObjV22(clean)).finally(()=>{ syncing=false; });
+      }
+    };
+  }
+
+  function startV22(){
+    patchStoreV22();
+    if(!dbReadyV22()){
+      setTimeout(startV22,500);
+      return;
+    }
+    const ref=warDb.ref('members');
+    ref.once('value').then(snap=>{
+      const remote=objToListV22(snap.val());
+      const local=localMembersV22();
+
+      if(remote.length){
+        window.membersCacheV18=saveLocalV22(remote);
+      }else if(local.length){
+        ref.set(listToObjV22(local));
+        window.membersCacheV18=saveLocalV22(local);
+      }
+
+      ready=true;
+      if(typeof renderMembersV5==='function') renderMembersV5();
+      if(typeof renderBaiyeMemberOptionsV5==='function') renderBaiyeMemberOptionsV5();
+      if(typeof renderBaiyeMemberOptionsV10==='function') renderBaiyeMemberOptionsV10();
+
+      ref.on('value', s=>{
+        if(syncing)return;
+        const list=objToListV22(s.val());
+        window.membersCacheV18=saveLocalV22(list);
+        if(typeof renderMembersV5==='function') renderMembersV5();
+        if(typeof renderBaiyeMemberOptionsV5==='function') renderBaiyeMemberOptionsV5();
+        if(typeof renderBaiyeMemberOptionsV10==='function') renderBaiyeMemberOptionsV10();
+      });
+    }).catch(e=>{
+      console.error('members sync error', e);
+      alert('members 同步失敗，請檢查 Firebase Realtime Database 規則');
+    });
+  }
+
+  setTimeout(startV22,1200);
+})();
+</script>
+
 </body></html>
