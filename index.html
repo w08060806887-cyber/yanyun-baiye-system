@@ -688,7 +688,7 @@ setTimeout(function(){
 
 <script>
 /* V15_ROLE_CHECKBOXES_AND_IDENTITY */
-const ROLE_LIST_V15 = ['霖霖','雙扇','八方奶','威威','陌奶','唐陌','影影','風風','虹虹','雙劍','玉玉','鈞鈞','釣釣'];
+const ROLE_LIST_V15 = ['霖霖','雙扇','八方奶','威威','陌奶','唐陌','影影','風風','虹虹','雙劍','玉玉','鈞鈞','釣釣','塵塵','可切換'];
 
 function splitRolesV15(text){
   return String(text||'').split(/[、,，/／\s]+/).map(x=>x.trim()).filter(Boolean);
@@ -786,7 +786,7 @@ setTimeout(setupRoleCheckboxesV15,1000);
 
 <script>
 /* V16_FINAL_MEMBER_FORM_AND_ROLE_STATS */
-const ROLE_LIST_V16=['霖霖','雙扇','八方奶','威威','陌奶','唐陌','影影','風風','虹虹','雙劍','玉玉','鈞鈞','釣釣'];
+const ROLE_LIST_V16=['霖霖','雙扇','八方奶','威威','陌奶','唐陌','影影','風風','虹虹','雙劍','玉玉','鈞鈞','釣釣','塵塵','可切換'];
 
 function splitRolesV16(text){
   return String(text||'').split(/[、,，/／\s]+/).map(x=>x.trim()).filter(Boolean);
@@ -1357,4 +1357,17 @@ setTimeout(refreshBaiyeAdminModeV20,800);
 setTimeout(refreshBaiyeAdminModeV20,1600);
 </script>
 
+
+<script>
+setTimeout(function(){
+ if(typeof cls==='function'){
+   const old=cls;
+   window.cls=function(v){
+      if(v==='塵塵') return 'purple';
+      if(v==='可切換') return 'gray';
+      return old(v);
+   };
+ }
+},300);
+</script>
 </body></html>
