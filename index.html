@@ -151,7 +151,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,san
           <div class="baiyeForm" style="grid-template-columns:1.2fr 1fr 1fr 1fr;align-items:end;margin-top:14px">
             <div><label>輸入角色</label><input id="baiyeMemberSearch" list="baiyeMemberList" placeholder="打名字會跳出資料" oninput="selectBaiyeMemberV10()"><datalist id="baiyeMemberList"></datalist></div>
             <div><label>角色名稱</label><input id="baiyeName" class="readonlyInput" placeholder="選角色自動帶入"></div>
-            <div><label>流派</label><select id="baiyeSchool" class="readonlyInput"><option value="">請選擇</option><option>霖霖</option><option>雙扇</option><option>八方奶</option><option>威威</option><option>陌奶</option><option>唐陌</option><option>影影</option><option>風風</option><option>虹虹</option><option>雙劍</option><option>玉玉</option><option>鈞鈞</option><option>釣釣</option></select></div>
+            <div><label>流派</label><input id="baiyeSchool" class="readonlyInput" placeholder="可直接輸入流派"></div>
             <div><label>戰力</label><input id="baiyePower" class="readonlyInput" type="number" step="0.1" placeholder="例如 4.3"></div>
           </div>
           <div class="miniNote">先到「人員配置」新增成員；報名時選角色會自動帶出流派與戰力。也可手動改流派或戰力。</div>
@@ -187,7 +187,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,san
       <input type="hidden" id="memberEditIndex" value="-1">
       <div class="memberForm">
         <div><label>角色名稱</label><input id="memberName" placeholder="例如 上官蹦蹦"></div>
-        <div><label>流派</label><select id="memberRole"><option>霖霖</option><option>雙扇</option><option>八方奶</option><option>威威</option><option>陌奶</option><option>唐陌</option><option>影影</option><option>風風</option><option>虹虹</option><option>雙劍</option><option>玉玉</option><option>鈞鈞</option><option>釣釣</option></select></div>
+        <div><label>流派</label><input id="memberRole" placeholder="可直接輸入流派，例如 霖霖 / 威鈞 / 雙陌"></div>
         <div><label>身份</label><select id="memberIdentity"><option>語音指揮</option><option>技能指揮</option><option selected>成員</option></select></div>
         <div><label>戰力</label><input id="memberPower" type="number" step="0.1" placeholder="4.3"></div>
         <div><label>親友團小組</label><input id="memberFriend" placeholder="空白=無，例如 PT01"></div>
@@ -284,7 +284,7 @@ function loadMembersV5(){try{return JSON.parse(localStorage.getItem(MEMBER_STORA
 function saveMembersStoreV5(list){localStorage.setItem(MEMBER_STORAGE_V5,JSON.stringify(list));}
 function normalizeMemberV5(m){return {name:(m.name||'').trim(),role:m.role||'',identity:m.identity||'成員',power:m.power||'',friend:m.friend||'',note:m.note||'',enabled:m.enabled||'是'};}
 function getMembersV5(){return loadMembersV5().map(normalizeMemberV5);}
-function clearMemberFormV5(){['memberName','memberPower','memberNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});const i=document.getElementById('memberEditIndex');if(i)i.value='-1';['memberRole','memberIdentity','memberEnabled'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0});const mi=document.getElementById('memberIdentity');if(mi)mi.value='成員';}
+function clearMemberFormV5(){['memberName','memberRole','memberPower','memberFriend','memberNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});const i=document.getElementById('memberEditIndex');if(i)i.value='-1';['memberIdentity','memberEnabled'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0});const mi=document.getElementById('memberIdentity');if(mi)mi.value='成員';}
 function saveMemberV5(){
  const name=document.getElementById('memberName')?.value.trim();
  if(!name)return alert('請輸入角色名稱');
@@ -360,11 +360,11 @@ function renderSessionSummary(){const el=document.getElementById('sessionSummary
 function renderBaiyeSignup(){renderSessionChecks();renderSessionSummary();}
 async function addBaiyePlayer(){
   const name=document.getElementById('baiyeName')?.value.trim();
-  const school=document.getElementById('baiyeSchool')?.value;
+  const school=document.getElementById('baiyeSchool')?.value.trim();
   const power=document.getElementById('baiyePower')?.value.trim();
   const sessions=Array.from(document.querySelectorAll('#sessionChecks input:checked')).map(i=>i.value);
   if(!name)return alert('請輸入角色名稱');
-  if(!school)return alert('請選擇流派');
+  if(!school)return alert('請輸入流派');
   if(!power)return alert('請輸入戰力');
   if(!sessions.length)return alert('請至少選擇一個場次');
   const id=makePlayerId(name);
@@ -405,7 +405,7 @@ function loadMembersV5(){try{return JSON.parse(localStorage.getItem(MEMBER_STORA
 function saveMembersStoreV5(list){localStorage.setItem(MEMBER_STORAGE_V5,JSON.stringify(list));}
 function normalizeMemberV5(m){return {name:(m.name||'').trim(),role:m.role||'',identity:m.identity||'成員',power:m.power||'',friend:m.friend||'',note:m.note||'',enabled:m.enabled||'是'};}
 function getMembersV5(){return loadMembersV5().map(normalizeMemberV5);}
-function clearMemberFormV5(){['memberName','memberPower','memberNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});const i=document.getElementById('memberEditIndex');if(i)i.value='-1';['memberRole','memberIdentity','memberEnabled'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0});const mi=document.getElementById('memberIdentity');if(mi)mi.value='成員';}
+function clearMemberFormV5(){['memberName','memberRole','memberPower','memberFriend','memberNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''});const i=document.getElementById('memberEditIndex');if(i)i.value='-1';['memberIdentity','memberEnabled'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0});const mi=document.getElementById('memberIdentity');if(mi)mi.value='成員';}
 function saveMemberV5(){
  const name=document.getElementById('memberName')?.value.trim();
  if(!name)return alert('請輸入角色名稱');
@@ -2038,6 +2038,144 @@ setTimeout(function(){
   if(input)input.addEventListener('input',fillXjByMemberV27);
   if(typeof render==='function')render();
 },1000);
+</script>
+
+
+<script>
+/* V28_ROLE_TEXTFIELD_PATCH
+   流派改為可自由輸入：
+   1) 百業戰報名頁 baiyeSchool 已改成 input
+   2) 人員配置 memberRole 強制改回文字輸入，不再使用下拉/多選/checkbox
+*/
+(function(){
+  function ensureMemberRoleTextfieldV28(){
+    const role = document.getElementById('memberRole');
+    if(!role) return;
+
+    // 移除舊版多選 checkbox UI
+    const checks = document.getElementById('memberRoleChecks');
+    if(checks) checks.remove();
+
+    // 如果舊元素是 select，換成 input；如果已經是 input，直接顯示
+    if(role.tagName === 'SELECT'){
+      const input = document.createElement('input');
+      input.id = 'memberRole';
+      input.placeholder = '可直接輸入流派，例如 霖霖 / 威鈞 / 雙陌';
+      input.value = role.value || '';
+      role.parentNode.replaceChild(input, role);
+    }else{
+      role.type = 'text';
+      role.style.display = '';
+      role.placeholder = role.placeholder || '可直接輸入流派，例如 霖霖 / 威鈞 / 雙陌';
+    }
+
+    const finalRole = document.getElementById('memberRole');
+    if(finalRole && finalRole.previousElementSibling && finalRole.previousElementSibling.tagName === 'LABEL'){
+      finalRole.previousElementSibling.textContent = '流派';
+    }
+  }
+
+  function readRoleTextV28(){
+    ensureMemberRoleTextfieldV28();
+    return (document.getElementById('memberRole')?.value || '').trim();
+  }
+
+  window.saveMemberV5 = function(){
+    ensureMemberRoleTextfieldV28();
+    const name = document.getElementById('memberName')?.value.trim();
+    if(!name) return alert('請輸入角色名稱');
+
+    const roleText = readRoleTextV28();
+    if(!roleText) return alert('請輸入流派');
+
+    const member = normalizeMemberV5({
+      name,
+      role: roleText,
+      identity: memberIdentity.value,
+      power: memberPower.value,
+      friend: (typeof normalizePTV17 === 'function' ? normalizePTV17(memberFriend.value) : memberFriend.value),
+      note: '',
+      enabled: memberEnabled.value
+    });
+
+    const list = getMembersV5();
+    const edit = Number(document.getElementById('memberEditIndex')?.value || -1);
+    if(edit >= 0){
+      list[edit] = member;
+    }else{
+      const exist = list.findIndex(x => x.name === name);
+      if(exist >= 0){
+        if(!confirm('這個角色已存在，要覆蓋嗎？')) return;
+        list[exist] = member;
+      }else{
+        list.push(member);
+      }
+    }
+
+    saveMembersStoreV5(list);
+    clearMemberFormV5();
+    renderMembersV5();
+    renderBaiyeMemberOptionsV5();
+    alert('已儲存');
+  };
+
+  window.editMemberV5 = function(i){
+    ensureMemberRoleTextfieldV28();
+    const list = getMembersV5();
+    const m = list[i];
+    if(!m) return;
+    memberEditIndex.value = i;
+    memberName.value = m.name || '';
+    document.getElementById('memberRole').value = m.role || '';
+    memberIdentity.value = ['語音指揮','技能指揮','成員'].includes(m.identity) ? m.identity : '成員';
+    memberPower.value = m.power || '';
+    memberFriend.value = m.friend || '';
+    const note = document.getElementById('memberNote');
+    if(note) note.value = '';
+    memberEnabled.value = m.enabled || '是';
+    window.scrollTo(0,0);
+  };
+
+  window.clearMemberFormV5 = function(){
+    ensureMemberRoleTextfieldV28();
+    ['memberName','memberRole','memberPower','memberFriend'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+    const note = document.getElementById('memberNote');
+    if(note) note.value = '';
+    const i = document.getElementById('memberEditIndex');
+    if(i) i.value = '-1';
+    const mi = document.getElementById('memberIdentity');
+    if(mi) mi.value = '成員';
+    const me = document.getElementById('memberEnabled');
+    if(me) me.value = '是';
+  };
+
+  // 讓百業報名頁的流派欄位也保證是文字輸入
+  function ensureBaiyeSchoolTextfieldV28(){
+    const school = document.getElementById('baiyeSchool');
+    if(!school) return;
+    if(school.tagName === 'SELECT'){
+      const input = document.createElement('input');
+      input.id = 'baiyeSchool';
+      input.className = school.className;
+      input.placeholder = '可直接輸入流派';
+      input.value = school.value || '';
+      school.parentNode.replaceChild(input, school);
+    }else{
+      school.type = 'text';
+      school.placeholder = school.placeholder || '可直接輸入流派';
+    }
+  }
+
+  ensureBaiyeSchoolTextfieldV28();
+  ensureMemberRoleTextfieldV28();
+  setTimeout(function(){
+    ensureBaiyeSchoolTextfieldV28();
+    ensureMemberRoleTextfieldV28();
+  }, 1200);
+})();
 </script>
 
 </body></html>
