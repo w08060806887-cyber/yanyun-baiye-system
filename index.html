@@ -95,7 +95,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,san
       <div class="title">我要報名</div>
       <div class="form">
         <div><label>角色名稱</label><input id="name" list="xjMemberList" placeholder="輸入角色名稱"><datalist id="xjMemberList"></datalist></div>
-        <div><label>流派（可多選）</label><select id="schoolSelect" multiple><option>霖霖</option><option>雙扇</option><option>八方奶</option><option>威威</option><option>陌奶</option><option>唐陌</option><option>影影</option><option>風風</option><option>虹虹</option><option>雙劍</option><option>玉玉</option><option>鈞鈞</option></select><small>電腦按 Ctrl / ⌘ 可多選，手機可直接點選多個。</small></div>
+        <div><label>流派</label><input id="schoolSelect" placeholder="例如：霖霖、雙扇"><small>可直接輸入多個流派，以 、 或 , 分隔。</small></div>
         <div><label>可打星期</label><select id="day"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option><option>星期六</option><option>星期日</option></select></div>
         <div><label>可打時間</label><select id="time"><option>9:30</option><option>10:00</option><option>10:30</option><option>11:00</option></select></div>
       </div><button class="submit" onclick="addPlayer()">確認報名</button>
@@ -626,15 +626,15 @@ function splitRolesV14(text){
 function setupMemberRoleMultiV14(){
   const role=document.getElementById('memberRole');
   if(!role)return;
-  role.multiple=true;
-  role.size=8;
-  role.style.height='170px';
-  role.title='可按住 Ctrl/Command 多選；手機可直接點多個';
+  
+  
+  
+  
 }
 function getSelectedRolesV14(){
   const role=document.getElementById('memberRole');
   if(!role)return '';
-  return Array.from(role.selectedOptions).map(o=>o.value).filter(Boolean).join('、');
+  return role.value||'';
 }
 function setSelectedRolesV14(text){
   const role=document.getElementById('memberRole');
