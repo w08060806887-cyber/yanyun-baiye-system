@@ -2178,4 +2178,85 @@ setTimeout(function(){
 })();
 </script>
 
+
+
+<script>
+/* V31_XIAJING_ROLE_TEXTFIELD_FIX
+   修正原因：百業俠境畫面已經把 schoolSelect 改成 input，
+   但舊程式 selectedSchools() / addPlayer() 還在用 select.selectedOptions / options，
+   會造成手機報名或自動帶入流派失敗。
+*/
+(function(){
+  function splitRolesV31(text){
+    return String(text || '')
+      .split(/[、,，/／\s]+/)
+      .map(x => x.trim())
+      .filter(Boolean);
+  }
+
+  window.selectedSchools = function(){
+    const el = document.getElementById('schoolSelect');
+    if(!el) return [];
+    if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA'){
+      return splitRolesV31(el.value);
+    }
+    return Array.from(el.selectedOptions || []).map(o => o.value).filter(Boolean);
+  };
+  try{ selectedSchools = window.selectedSchools; }catch(e){}
+
+  window.fillXjByMemberV27 = function(){
+    const name = document.getElementById('name')?.value.trim();
+    if(!name || typeof getMembersV5 !== 'function') return;
+    const m = getMembersV5().find(x => x.name === name);
+    if(!m) return;
+    const roles = splitRolesV31(m.role).join('、');
+    const el = document.getElementById('schoolSelect');
+    if(!el) return;
+    if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA'){
+      el.value = roles;
+    }else{
+      const arr = splitRolesV31(m.role);
+      Array.from(el.options || []).forEach(o => { o.selected = arr.includes(o.value); });
+    }
+  };
+
+  window.addPlayer = function(){
+    const nameEl = document.getElementById('name');
+    const schoolEl = document.getElementById('schoolSelect');
+    const dayEl = document.getElementById('day');
+    const timeEl = document.getElementById('time');
+    const n = nameEl?.value.trim();
+    const schools = window.selectedSchools();
+    if(!n) return alert('請輸入角色名稱');
+    if(schools.length === 0) return alert('請至少輸入一個流派');
+    if(typeof players === 'undefined') return alert('系統尚未初始化，請重新整理');
+    players.push({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+      name: n,
+      schools,
+      day: dayEl?.value || '',
+      time: timeEl?.value || '',
+      group: (typeof nextGroup === 'function' ? nextGroup() : 1),
+      createdAt: Date.now()
+    });
+    if(nameEl) nameEl.value = '';
+    if(schoolEl){
+      if(schoolEl.tagName === 'INPUT' || schoolEl.tagName === 'TEXTAREA') schoolEl.value = '';
+      else Array.from(schoolEl.options || []).forEach(o => o.selected = false);
+    }
+    if(typeof save === 'function') save();
+    if(typeof render === 'function') render();
+  };
+  try{ addPlayer = window.addPlayer; }catch(e){}
+
+  setTimeout(function(){
+    const input = document.getElementById('name');
+    if(input){
+      input.removeEventListener('input', window.fillXjByMemberV27);
+      input.addEventListener('input', window.fillXjByMemberV27);
+    }
+  }, 500);
+})();
+</script>
+
 </body></html>
