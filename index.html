@@ -254,7 +254,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,san
 
     <section class="card">
       <div class="title">直式編排</div>
-      <div id="verticalArrange" class="arrangeBoard"></div>
+      <div id="verticalArrange" class="arrangeBoard"></div><div class="card"><div class="title">候補名單</div><div id="standbyList"></div></div>
     </section>
 
     <section class="card">
@@ -370,20 +370,35 @@ async function addBaiyePlayer(){
   const id=makePlayerId(name);
   for(const sid of sessions){
     const list=getSessionPlayers(sid);
-    if(list.length>=WAR_MAX){alert(`${sessionLabel(sid)} 已滿 30 人，無法報名`);continue;}
-    await warDb.ref(`baiyeWarV2/sessions/${sid}/players/${id}`).update({name,school,power,slot:(warData[sid]?.players?.[id]?.slot)||'',createdAt:(warData[sid]?.players?.[id]?.createdAt)||Date.now()});
+    const mainCount=list.filter(p=>!p.standby).length;
+    const standby=mainCount>=WAR_MAX;
+    await warDb.ref(`baiyeWarV2/sessions/${sid}/players/${id}`).update({
+      name,
+      school,
+      power,
+      standby,
+      slot: standby ? '' : ((warData[sid]?.players?.[id]?.slot)||''),
+      createdAt:(warData[sid]?.players?.[id]?.createdAt)||Date.now()
+    });
   }
   document.getElementById('baiyeName').value='';document.getElementById('baiyeSchool').value='';document.getElementById('baiyePower').value='';const ms=document.getElementById('baiyeMemberSelect');if(ms)ms.value='';const mi=document.getElementById('baiyeMemberSearch');if(mi)mi.value='';
   document.querySelectorAll('#sessionChecks input').forEach(i=>i.checked=false);
   alert('報名完成');
 }
 function selectSession(id){currentSession=id;renderBaiyeArrange();}
-function memberLine(p){return `<span><span class="tag ${cls(p.school)}">${p.school}</span> ${p.name}</span><span class="memberMeta">${Number(p.power||0).toLocaleString()}</span>`;}
+function memberLine(p){return `<span><span class="tag ${cls(p.school)}">${p.school}</span> ${p.name} ${p.standby?'<span style="color:#ff9a7a;font-weight:900">（候補）</span>':''}</span><span class="memberMeta">${Number(p.power||0).toLocaleString()}</span>`;}
 function renderBaiyeArrange(){
   renderSessionTabs();
   const list=getSessionPlayers(currentSession);
-  const count=document.getElementById('currentSessionCount');if(count)count.textContent=`${sessionLabel(currentSession)}　${list.length} / ${WAR_MAX}`;
-  const un=document.getElementById('unassignedArrange');if(un)un.innerHTML=list.filter(p=>!p.slot).map(p=>`<span class="chip" draggable="true" ondragstart="dragWar('${p.id}')">${memberLine(p)}<button class="smallBtn danger" onclick="removeWarPlayer('${p.id}')">刪</button></span>`).join('')||'<span class="muted">目前沒有未編排人員</span>';
+  const mainList=list.filter(p=>!p.standby);
+  const standbyList=list.filter(p=>p.standby);
+  const count=document.getElementById('currentSessionCount');if(count)count.textContent=`${sessionLabel(currentSession)}　正式:${mainList.length}/${WAR_MAX}　候補:${standbyList.length}`;
+  const un=document.getElementById('unassignedArrange');if(un)un.innerHTML=mainList.filter(p=>!p.slot).map(p=>`<span class="chip" draggable="true" ondragstart="dragWar('${p.id}')">${memberLine(p)}<button class="smallBtn danger" onclick="removeWarPlayer('${p.id}')">刪</button></span>`).join('')||'<span class="muted">目前沒有未編排人員</span>';
+
+  const standbyBox=document.getElementById('standbyList');
+  if(standbyBox){
+    standbyBox.innerHTML=standbyList.map(p=>`<div class="arrangeMember">${memberLine(p)}<button class="smallBtn danger" onclick="removeWarPlayer('${p.id}')">刪</button></div>`).join('')||'<div class="muted">目前沒有候補名單</div>';
+  }
   const vertical=document.getElementById('verticalArrange');if(vertical)vertical.innerHTML=SLOTS.map(slot=>{const members=list.filter(p=>p.slot===slot);return `<div class="arrangeSlot" ondragover="allowDrop(event)" ondrop="dropToSlot(event,'${slot}')"><div class="arrangeHead">${slot}(${SLOT_POS[slot]})</div>${members.map(p=>`<div class="arrangeMember" draggable="true" ondragstart="dragWar('${p.id}')">${memberLine(p)}<button class="smallBtn danger" onclick="removeWarPlayer('${p.id}')">刪</button></div>`).join('')||'<div class="empty">空位</div>'}</div>`}).join('');
   const horizontal=document.getElementById('horizontalArrange');if(horizontal)horizontal.innerHTML=SLOTS.map(slot=>{const members=list.filter(p=>p.slot===slot);return `<div class="hrow"><div class="hlabel">${slot}</div><div class="hcontent">${members.map(p=>`<span class="tag ${cls(p.school)}">${p.school}</span>${p.name}`).join('　　')||'空位'}</div></div>`}).join('');
   renderCopyText();
@@ -943,7 +958,9 @@ function roleStatsHtmlV16(members){
 function renderBaiyeArrange(){
   renderSessionTabs();
   const list=getSessionPlayers(currentSession);
-  const count=document.getElementById('currentSessionCount');if(count)count.textContent=`${sessionLabel(currentSession)}　${list.length} / ${WAR_MAX}`;
+  const mainList=list.filter(p=>!p.standby);
+  const standbyList=list.filter(p=>p.standby);
+  const count=document.getElementById('currentSessionCount');if(count)count.textContent=`${sessionLabel(currentSession)}　正式:${mainList.length}/${WAR_MAX}　候補:${standbyList.length}`;
   const un=document.getElementById('unassignedArrange');
   if(un)un.innerHTML=list.filter(p=>!p.slot).map(p=>`<span class="chip" draggable="true" ondragstart="dragWar('${p.id}')">${memberLine(p)}<button class="smallBtn danger" onclick="removeWarPlayer('${p.id}')">刪</button></span>`).join('')||'<span class="muted">目前沒有未編排人員</span>';
   const vertical=document.getElementById('verticalArrange');
