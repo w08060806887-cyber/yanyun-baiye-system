@@ -2276,4 +2276,205 @@ setTimeout(function(){
 })();
 </script>
 
+
+
+<script>
+/* V33_STANDBY_AFTER_30_ASSIGNED_AND_XIAJING_SYNC_FIX
+   - 百業戰：報名不再擋 30 人；候補只在 A1~B3 已編排滿 30 人後顯示。
+   - 編排頁未編排人員不顯示「候補」字樣，避免誤會。
+   - 百業俠境：修正流派文字輸入與 Firebase 同步。
+*/
+(function(){
+  function roleClassV33(role){ return (typeof cls === 'function') ? cls(role) : ''; }
+  function plainMemberLineV33(p){
+    const school = p && p.school ? p.school : '';
+    const name = p && p.name ? p.name : '';
+    const power = p && p.power ? Number(p.power||0).toLocaleString() : '';
+    return `<span><span class="tag ${roleClassV33(school)}">${school}</span> ${name}</span><span class="memberMeta">${power}</span>`;
+  }
+  function standbyMemberLineV33(p){
+    const school = p && p.school ? p.school : '';
+    const name = p && p.name ? p.name : '';
+    const power = p && p.power ? Number(p.power||0).toLocaleString() : '';
+    return `<span><span class="tag ${roleClassV33(school)}">${school}</span> ${name} <span style="color:#ff9a7a;font-weight:900">（候補）</span></span><span class="memberMeta">${power}</span>`;
+  }
+
+  window.memberLine = plainMemberLineV33;
+  try{ memberLine = window.memberLine; }catch(e){}
+
+  window.addBaiyePlayer = async function(){
+    const name=document.getElementById('baiyeName')?.value.trim();
+    const school=document.getElementById('baiyeSchool')?.value.trim();
+    const power=document.getElementById('baiyePower')?.value.trim();
+    const sessions=Array.from(document.querySelectorAll('#sessionChecks input:checked')).map(i=>i.value);
+    if(!name)return alert('請輸入角色名稱');
+    if(!school)return alert('請輸入流派');
+    if(!power)return alert('請輸入戰力');
+    if(!sessions.length)return alert('請至少選擇一個場次');
+    if(!window.warDb && typeof warDb !== 'undefined') window.warDb = warDb;
+    const db = window.warDb || (typeof firebase !== 'undefined' ? firebase.database() : null);
+    if(!db) return alert('Firebase 尚未連線，請重新整理');
+    const id=(typeof makePlayerId==='function'?makePlayerId(name):name.replace(/[.#$\[\]/]/g,'_'));
+    for(const sid of sessions){
+      const old=(warData && warData[sid] && warData[sid].players && warData[sid].players[id]) || {};
+      await db.ref(`baiyeWarV2/sessions/${sid}/players/${id}`).update({
+        name, school, power,
+        // 不在報名時標記候補；候補改由「已編排滿30人」後於畫面判斷。
+        standby:false,
+        slot: old.slot || '',
+        createdAt: old.createdAt || Date.now()
+      });
+    }
+    ['baiyeName','baiyeSchool','baiyePower','baiyeMemberSearch'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    const ms=document.getElementById('baiyeMemberSelect'); if(ms)ms.value='';
+    document.querySelectorAll('#sessionChecks input').forEach(i=>i.checked=false);
+    alert('報名完成');
+  };
+  try{ addBaiyePlayer = window.addBaiyePlayer; }catch(e){}
+
+  window.renderSessionSummary = function(){
+    const el=document.getElementById('sessionSummary'); if(!el || typeof SESSIONS==='undefined')return;
+    el.innerHTML=SESSIONS.map(s=>{
+      const list=(typeof getSessionPlayers==='function'?getSessionPlayers(s.id):[]);
+      const assigned=list.filter(p=>p.slot).length;
+      const waiting=list.filter(p=>!p.slot).length;
+      const standbyActive=assigned >= (typeof WAR_MAX!=='undefined'?WAR_MAX:30);
+      return `<div class="hrow"><div class="hlabel">${sessionLabel(s.id)}</div><div class="hcontent">報名：${list.length}/${WAR_MAX}　已編排：${assigned}/${WAR_MAX}${standbyActive?`　候補：${waiting}`:`　未編排：${waiting}`}</div></div>`;
+    }).join('');
+  };
+  try{ renderSessionSummary = window.renderSessionSummary; }catch(e){}
+
+  window.renderBaiyeArrange = function(){
+    if(typeof renderSessionTabs === 'function') renderSessionTabs();
+    const list=typeof getSessionPlayers === 'function' ? getSessionPlayers(currentSession) : [];
+    const max=(typeof WAR_MAX!=='undefined'?WAR_MAX:30);
+    const assignedCount=list.filter(p=>p.slot).length;
+    const standbyActive=assignedCount>=max;
+    const unassigned=list.filter(p=>!p.slot);
+    const standbyList=standbyActive ? unassigned : [];
+    const count=document.getElementById('currentSessionCount');
+    if(count){
+      count.textContent = standbyActive
+        ? `${sessionLabel(currentSession)}　已編排:${assignedCount}/${max}　候補:${standbyList.length}`
+        : `${sessionLabel(currentSession)}　報名:${list.length}/${max}　已編排:${assignedCount}/${max}`;
+    }
+    const can=(typeof isBaiyeAdminV20==='function') ? isBaiyeAdminV20() : true;
+    const dragAttr=can?'draggable="true"':'';
+    const delBtn=(p)=> can ? `<button class="smallBtn danger" onclick="removeWarPlayer('${p.id}')">刪</button>` : '';
+
+    const un=document.getElementById('unassignedArrange');
+    if(un){
+      if(standbyActive){
+        un.innerHTML='<span class="muted">已編排滿 30 人，剩餘報名者已列入候補名單。</span>';
+      }else{
+        un.innerHTML=unassigned.map(p=>`<span class="chip" ${dragAttr} ondragstart="dragWar('${p.id}')">${plainMemberLineV33(p)}${delBtn(p)}</span>`).join('')||'<span class="muted">目前沒有未編排人員</span>';
+      }
+    }
+
+    const standbyBox=document.getElementById('standbyList');
+    if(standbyBox){
+      standbyBox.innerHTML=standbyActive
+        ? (standbyList.map(p=>`<div class="arrangeMember" ${dragAttr} ondragstart="dragWar('${p.id}')">${standbyMemberLineV33(p)}${delBtn(p)}</div>`).join('')||'<div class="muted">目前沒有候補名單</div>')
+        : '<div class="muted">A1～B3 排滿 30 人後，才會顯示候補名單。</div>';
+    }
+
+    const vertical=document.getElementById('verticalArrange');
+    if(vertical && typeof SLOTS!=='undefined')vertical.innerHTML=SLOTS.map(slot=>{
+      const members=list.filter(p=>p.slot===slot);
+      return `<div class="arrangeSlot" ${can?`ondragover="allowDrop(event)" ondrop="dropToSlot(event,'${slot}')"`:''}>
+        <div class="arrangeHead">${slot}(${SLOT_POS[slot]})</div>
+        ${members.map(p=>`<div class="arrangeMember" ${dragAttr} ondragstart="dragWar('${p.id}')">${plainMemberLineV33(p)}${delBtn(p)}</div>`).join('')||'<div class="empty">空位</div>'}
+        ${typeof roleStatsHtmlV16==='function'?roleStatsHtmlV16(members):''}
+      </div>`;
+    }).join('');
+
+    const horizontal=document.getElementById('horizontalArrange');
+    if(horizontal && typeof SLOTS!=='undefined')horizontal.innerHTML=SLOTS.map(slot=>{
+      const members=list.filter(p=>p.slot===slot);
+      return `<div class="hrow"><div class="hlabel">${slot}</div><div class="hcontent">${members.map(p=>`<span class="tag ${roleClassV33(p.school)}">${p.school}</span>${p.name}`).join('　　')||'空位'}</div></div>`;
+    }).join('');
+    if(typeof renderCopyText === 'function') renderCopyText();
+  };
+  try{ renderBaiyeArrange = window.renderBaiyeArrange; }catch(e){}
+
+  // 百業俠境：流派文字輸入 + Firebase 同步補強
+  function splitRolesV33(text){return String(text||'').split(/[、,，/／\s]+/).map(x=>x.trim()).filter(Boolean);}
+  window.selectedSchools=function(){
+    const el=document.getElementById('schoolSelect');
+    if(!el)return [];
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')return splitRolesV33(el.value);
+    return Array.from(el.selectedOptions||[]).map(o=>o.value).filter(Boolean);
+  };
+  try{ selectedSchools=window.selectedSchools; }catch(e){}
+
+  function getFirebaseDbV33(){
+    try{
+      if(window.warDb && window.warDb.ref)return window.warDb;
+      if(typeof warDb!=='undefined' && warDb && warDb.ref){window.warDb=warDb;return warDb;}
+      if(typeof firebase!=='undefined'){
+        if(firebase.apps && firebase.apps.length===0 && typeof FIREBASE_CONFIG!=='undefined') firebase.initializeApp(FIREBASE_CONFIG);
+        window.warDb=firebase.database();
+        try{warDb=window.warDb;}catch(e){}
+        return window.warDb;
+      }
+    }catch(e){console.error('Firebase init V33 failed',e);}
+    return null;
+  }
+
+  const XJ_PATH_V33='baiyeXiajing/players';
+  let xjReadyV33=false, xjSavingV33=false;
+  function xjObjV33(list){const obj={};(list||[]).forEach(p=>{if(!p.id)p.id=Date.now().toString(36)+Math.random().toString(36).slice(2);obj[p.id]={id:p.id,name:p.name||'',schools:Array.isArray(p.schools)?p.schools:[],day:p.day||'',time:p.time||'',group:p.group||1,createdAt:p.createdAt||Date.now()};});return obj;}
+  function xjListV33(obj){return Object.values(obj||{}).map(p=>({id:p.id||'',name:p.name||'',schools:Array.isArray(p.schools)?p.schools:[],day:p.day||'',time:p.time||'',group:p.group||1,createdAt:p.createdAt||0})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));}
+  function saveXjLocalV33(){try{localStorage.setItem('wangshi_xiajing_working_v5',JSON.stringify(players||[]));}catch(e){}}
+
+  window.save=function(){
+    saveXjLocalV33();
+    const db=getFirebaseDbV33();
+    if(db && xjReadyV33 && !xjSavingV33){
+      xjSavingV33=true;
+      db.ref(XJ_PATH_V33).set(xjObjV33(players||[])).finally(()=>{xjSavingV33=false;});
+    }
+  };
+  try{ save=window.save; }catch(e){}
+
+  window.addPlayer=function(){
+    const nameEl=document.getElementById('name');
+    const schoolEl=document.getElementById('schoolSelect');
+    const dayEl=document.getElementById('day');
+    const timeEl=document.getElementById('time');
+    const n=nameEl?.value.trim();
+    const schools=window.selectedSchools();
+    if(!n)return alert('請輸入角色名稱');
+    if(!schools.length)return alert('請至少輸入一個流派');
+    if(typeof players==='undefined')return alert('百業俠境尚未初始化，請重新整理');
+    players.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),name:n,schools,day:dayEl?.value||'',time:timeEl?.value||'',group:(typeof nextGroup==='function'?nextGroup():1),createdAt:Date.now()});
+    if(nameEl)nameEl.value='';
+    if(schoolEl){if(schoolEl.tagName==='INPUT'||schoolEl.tagName==='TEXTAREA')schoolEl.value='';else Array.from(schoolEl.options||[]).forEach(o=>o.selected=false);}
+    if(typeof save==='function')save();
+    if(typeof render==='function')render();
+  };
+  try{ addPlayer=window.addPlayer; }catch(e){}
+
+  function initXjV33(){
+    const db=getFirebaseDbV33();
+    if(!db){setTimeout(initXjV33,600);return;}
+    const ref=db.ref(XJ_PATH_V33);
+    ref.once('value').then(snap=>{
+      const remote=xjListV33(snap.val());
+      const local=Array.isArray(players)?players:[];
+      if(remote.length){players=remote;saveXjLocalV33();if(typeof render==='function')render();}
+      else if(local.length){ref.set(xjObjV33(local));}
+      xjReadyV33=true;
+      ref.on('value',s=>{if(xjSavingV33)return;players=xjListV33(s.val());saveXjLocalV33();if(typeof render==='function')render();});
+    }).catch(e=>{console.error('百業俠境同步失敗 V33',e);});
+  }
+
+  setTimeout(function(){
+    initXjV33();
+    if(typeof renderBaiyeArrange==='function')renderBaiyeArrange();
+    if(typeof renderBaiyeSignup==='function')renderBaiyeSignup();
+  },900);
+})();
+</script>
+
 </body></html>
