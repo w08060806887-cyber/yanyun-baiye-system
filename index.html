@@ -86,7 +86,7 @@ body{background:radial-gradient(circle at 50% 0,#21170b 0,#090704 44%,#020202 10
 .home-nav-main{left:29.6%;top:3.75%;width:5.5%;height:2.6%}.home-nav-war{left:37.4%;top:3.75%;width:10.6%;height:2.6%}.home-nav-xj{left:50.2%;top:3.75%;width:9.6%;height:2.6%}.home-nav-zhongzhi{left:62.4%;top:3.75%;width:9.7%;height:2.6%}.home-nav-members{left:74.7%;top:3.75%;width:9.2%;height:2.6%}.home-nav-monthly{left:83.9%;top:3.75%;width:4.0%;height:2.6%}.home-nav-command{left:88.1%;top:3.2%;width:10.8%;height:3.2%}
 .home-card-war{left:3.6%;top:56.4%;width:17.3%;height:27.1%}.home-card-xj{left:22.3%;top:56.4%;width:17.3%;height:27.1%}.home-card-zhongzhi{left:41.1%;top:56.4%;width:17.3%;height:27.1%}.home-card-members{left:60.1%;top:56.4%;width:17.3%;height:27.1%}.home-card-monthly{left:78.8%;top:56.4%;width:17.3%;height:27.1%}
 .xjWrap,.baiyeWrap{max-width:1200px;padding:22px 16px 48px}.header{position:relative;overflow:hidden;border:1px solid var(--ws-line);border-radius:10px;background:linear-gradient(135deg,rgba(34,24,13,.96),rgba(8,7,5,.96));box-shadow:0 16px 45px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,225,160,.16)}.header:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 0,rgba(241,210,138,.18),transparent 34%),linear-gradient(90deg,rgba(241,210,138,.1),transparent 42%);pointer-events:none}.header h1{position:relative;color:#ffe3a3;text-shadow:0 0 18px rgba(224,156,57,.34);letter-spacing:0}.header div,.header .memberTop{position:relative}
-.memberEditCard{display:none!important}
+.memberEditCard{display:none!important}.adminOnBaiye #baiyeMembersPage .memberEditCard{display:block!important}.adminOnBaiye #baiyeMembersPage .memberAdminLoginCard{display:none!important}
 .card,.team,.arrangeSlot,.monthlyCard,.warScheduleCard,.baiyeManageLogin{border-color:var(--ws-line)!important;border-radius:8px!important;background:linear-gradient(180deg,var(--ws-panel-2),var(--ws-panel))!important;box-shadow:0 12px 34px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,224,150,.08)}.card .card{box-shadow:none}.title{color:#ffe2a0;text-shadow:0 0 14px rgba(222,157,55,.24);letter-spacing:0}.note,.miniNote,small,.muted{color:#c8a86e!important}label{color:#e0bd78}input,select,textarea{border-color:rgba(190,143,66,.72)!important;background:#070604!important;color:#f7dda0!important;box-shadow:inset 0 1px 0 rgba(255,228,170,.06)}input:focus,select:focus,textarea:focus{outline:1px solid rgba(241,210,138,.72);box-shadow:0 0 0 3px rgba(241,210,138,.08)}button,.submit,.sessionTab.active{border:1px solid rgba(255,226,156,.42)!important;background:linear-gradient(180deg,#f4d897 0,#bf873a 54%,#7b4b1b 100%)!important;color:#180d04!important;box-shadow:0 8px 20px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,247,209,.5)}button:hover{filter:brightness(1.07)}.danger{background:linear-gradient(180deg,#9d332a,#5f1714)!important;color:white!important}.listTable th,.hlabel,.arrangeHead{background:linear-gradient(180deg,#322211,#1c1309)!important;color:#ffe2a0!important}.listTable th,.listTable td,.row,.hrow,.arrangeMember{border-color:rgba(190,143,66,.32)!important}.backBtn{width:auto;min-width:120px}.wsPlaceholder{min-height:360px;display:grid;place-items:center;text-align:center}.wsPlaceholderInner{max-width:560px}.wsPlaceholderMark{font-size:54px;color:#ffe2a0;text-shadow:0 0 24px rgba(241,190,91,.36);margin-bottom:14px}.zhongzhiGrid{display:grid;grid-template-columns:minmax(280px,420px) 1fr;gap:16px;align-items:start}.zhongzhiForm{display:grid;gap:12px}.zhongzhiStats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.zhongzhiStat{border:1px solid rgba(190,143,66,.42);border-radius:8px;background:rgba(6,5,4,.5);padding:12px}.zhongzhiStatNum{font-size:28px;font-weight:900;color:#ffe2a0}.zhongzhiRank{font-weight:900;color:#ffe2a0}.zhongzhiListWrap{overflow:auto;border:1px solid rgba(190,143,66,.34);border-radius:8px}.zhongzhiListWrap .listTable th,.zhongzhiListWrap .listTable td{white-space:nowrap}.zhongzhiListWrap .listTable td:nth-child(4),.zhongzhiListWrap .listTable td:nth-child(5){text-align:right}
 .arrangeProtected{display:none}.adminOnBaiye #baiyeArrangePage .arrangeProtected{display:block}.adminOnBaiye #baiyeAdminLoginCard{display:none}.adminForm{display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:end}.viewLocked .viewProtected{display:none}.viewUnlocked .viewLoginCard{display:none}.viewForm{display:grid;grid-template-columns:1fr 150px;gap:12px;align-items:end}
 @media(max-width:900px){.zhongzhiGrid,.zhongzhiStats{grid-template-columns:1fr}}
@@ -248,8 +248,17 @@ body{background:radial-gradient(circle at 50% 0,#21170b 0,#090704 44%,#020202 10
 
 <section id="baiyeMembersPage" class="page">
   <div class="baiyeWrap">
-    <button class="backBtn" onclick="showPage('baiyePage')">返回百業戰</button>
+    <button class="backBtn" onclick="showPage('homePage')">返回首頁</button>
     <div class="header"><h1>成員資料</h1><div>角色名稱｜流派｜身份｜戰力｜親友團小組｜啟用</div></div>
+
+    <section class="card memberAdminLoginCard">
+      <div class="title">成員資料維護</div>
+      <div class="note">輸入維護密碼後，才可新增、編輯、刪除成員資料。</div>
+      <div class="adminForm" style="margin-top:12px">
+        <div><label>維護密碼</label><input id="memberAdminPwV20" type="password" placeholder="請輸入維護密碼"></div>
+        <button onclick="loginBaiyeAdminV20('memberAdminPwV20')">進入維護</button>
+      </div>
+    </section>
 
     <section class="card memberEditCard">
       <div class="title">成員維護</div>
@@ -284,7 +293,7 @@ body{background:radial-gradient(circle at 50% 0,#21170b 0,#090704 44%,#020202 10
 
 <section id="baiyeArrangePage" class="page">
   <div class="baiyeWrap">
-    <button class="backBtn" onclick="showPage('baiyePage')">返回報名</button>
+    <button class="backBtn" onclick="showPage('homePage')">返回首頁</button>
     <div class="header"><h1>百業戰編排</h1><div>場次切換｜A1 A2 A3 / B1 B2 B3</div></div>
 
     <section class="card" id="baiyeAdminLoginCard">
@@ -384,7 +393,7 @@ body{background:radial-gradient(circle at 50% 0,#21170b 0,#090704 44%,#020202 10
 
 <section id="baiyeArrangeViewPage" class="page viewLocked">
   <div class="baiyeWrap">
-    <button class="backBtn" onclick="showPage('baiyePage')">返回百業戰</button>
+    <button class="backBtn" onclick="showPage('homePage')">返回首頁</button>
     <div class="header"><h1>百業戰編排查看</h1><div>團員查看｜唯讀模式</div></div>
 
     <section class="card viewLoginCard">
@@ -1350,13 +1359,14 @@ function isBaiyeAdminV20(){ return baiyeAdminV20 === true; }
 function loginBaiyeAdminV20(source){
   const input=document.getElementById(source || 'baiyeAdminPwV20');
   if(!input)return;
+  const isMemberGate = source === 'memberAdminPwV20';
   if(input.value===BAIYE_ADMIN_PASSWORD_V20){
     baiyeAdminV20=true;
     input.value='';
     refreshBaiyeAdminModeV20();
-    alert('已進入指揮後台');
+    alert(isMemberGate ? '已進入成員維護' : '已進入指揮後台');
   }else{
-    alert('後台密碼不正確');
+    alert('密碼不正確');
   }
 }
 function logoutBaiyeAdminV20(){
@@ -1633,7 +1643,7 @@ setTimeout(function(){
 
 <section id="monthlyPage" class="page">
   <div class="baiyeWrap">
-    <button class="backBtn" onclick="showPage('baiyePage')">返回百業戰</button>
+    <button class="backBtn" onclick="showPage('homePage')">返回首頁</button>
     <div class="header"><h1>月結系統</h1><div>百業戰出席｜親友團共用池｜達標判定</div></div>
 
     <section class="card">
