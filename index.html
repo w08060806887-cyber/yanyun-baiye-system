@@ -122,9 +122,14 @@ body{background:radial-gradient(circle at 50% 0,#21170b 0,#090704 44%,#020202 10
       <div class="form">
         <div><label>角色名稱</label><input id="name" list="xjMemberList" placeholder="輸入角色名稱"><datalist id="xjMemberList"></datalist></div>
         <div><label>流派</label><input id="schoolSelect" placeholder="例如：霖霖、雙扇"><small>可直接輸入多個流派，以 、 或 , 分隔。</small></div>
-        <div><label>可打星期</label><select id="day"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option><option>星期六</option><option>星期日</option></select></div>
-        <div><label>可打時間</label><select id="time"><option>21:30</option><option>22:00</option><option>22:30</option><option>23:00</option></select></div>
-      </div><button class="submit" onclick="addPlayer()">確認報名</button>
+          <div><label>可打星期</label><select id="day"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option><option>星期六</option><option>星期日</option></select></div>
+          <div><label>可打時間</label><select id="time"><option>21:30</option><option>22:00</option><option>22:30</option><option>23:00</option></select></div>
+      </div>
+      <input id="xjEditId" type="hidden" value="">
+      <div class="memberTop">
+        <button class="submit" id="xjSubmitBtn" onclick="addPlayer()">確認報名</button>
+        <button style="width:160px" id="xjCancelEditBtn" onclick="clearXjEdit()">取消編輯</button>
+      </div>
     </section>
     <section class="card"><div class="title">分隊表</div><div id="teams" class="teams"></div><div class="note">第一組、第二組、第三組固定顯示；未滿 10 人顯示招募中，滿 10 人顯示已滿。</div></section>
   </div>
@@ -171,6 +176,33 @@ body{background:radial-gradient(circle at 50% 0,#21170b 0,#090704 44%,#020202 10
         </div>
       </section>
     </div>
+    <section class="card">
+      <div class="title">眾志凌霄統計</div>
+      <div class="zhongzhiStats">
+        <div class="zhongzhiStat"><div class="muted">總報名</div><div class="zhongzhiStatNum" id="zhongzhiAdminTotal">0</div></div>
+        <div class="zhongzhiStat"><div class="muted">最高木樁傷害（萬）</div><div class="zhongzhiStatNum" id="zhongzhiAdminTopDamage">-</div></div>
+        <div class="zhongzhiStat"><div class="muted">最高秒傷（萬/秒）</div><div class="zhongzhiStatNum" id="zhongzhiAdminTopDps">-</div></div>
+      </div>
+      <div class="baiyeGrid">
+        <div>
+          <div class="title">各時段可參加人數</div>
+          <div id="zhongzhiTimeStats"></div>
+          <div class="title" style="margin-top:16px">流派統計</div>
+          <div id="zhongzhiSchoolStats"></div>
+        </div>
+        <div>
+          <div class="title">木樁傷害排行榜（萬）</div>
+          <div id="zhongzhiDamageRank"></div>
+          <div class="title" style="margin-top:16px">秒傷排行榜（萬/秒）</div>
+          <div id="zhongzhiDpsRank"></div>
+        </div>
+      </div>
+    </section>
+    <section class="card">
+      <div class="title">拖拉時段分配</div>
+      <div class="note">可把報名者拖到週四、週五、週六、週日，快速調整可參加時段。</div>
+      <div id="zhongzhiDragBoard" class="arrangeBoard" style="margin-top:12px"></div>
+    </section>
   </div>
 </section>
 
@@ -310,29 +342,6 @@ body{background:radial-gradient(circle at 50% 0,#21170b 0,#090704 44%,#020202 10
       <div class="adminForm" style="margin-top:12px">
         <div><label>目前查看密碼</label><input id="arrangeViewPasswordInput" placeholder="輸入新的查看密碼"></div>
         <button onclick="saveArrangeViewPassword()">更新密碼</button>
-      </div>
-    </section>
-
-    <section class="card arrangeProtected">
-      <div class="title">眾志凌霄報名統計</div>
-      <div class="zhongzhiStats">
-        <div class="zhongzhiStat"><div class="muted">總報名</div><div class="zhongzhiStatNum" id="zhongzhiAdminTotal">0</div></div>
-        <div class="zhongzhiStat"><div class="muted">最高木樁傷害（萬）</div><div class="zhongzhiStatNum" id="zhongzhiAdminTopDamage">-</div></div>
-        <div class="zhongzhiStat"><div class="muted">最高秒傷（萬/秒）</div><div class="zhongzhiStatNum" id="zhongzhiAdminTopDps">-</div></div>
-      </div>
-      <div class="baiyeGrid">
-        <div>
-          <div class="title">各時段可參加人數</div>
-          <div id="zhongzhiTimeStats"></div>
-          <div class="title" style="margin-top:16px">流派統計</div>
-          <div id="zhongzhiSchoolStats"></div>
-        </div>
-        <div>
-          <div class="title">木樁傷害排行榜（萬）</div>
-          <div id="zhongzhiDamageRank"></div>
-          <div class="title" style="margin-top:16px">秒傷排行榜（萬/秒）</div>
-          <div id="zhongzhiDpsRank"></div>
-        </div>
       </div>
     </section>
 
@@ -2593,6 +2602,109 @@ setTimeout(function(){
 </script>
 
 <script>
+/* V37_XIAJING_EDIT_MODE */
+(function(){
+  function splitXjRolesV37(text){
+    return String(text||'').split(/[、,，/／\s]+/).map(x=>x.trim()).filter(Boolean);
+  }
+  function setXjSchoolValueV37(schools){
+    const el=document.getElementById('schoolSelect');
+    if(!el)return;
+    const list=Array.isArray(schools)?schools:splitXjRolesV37(schools);
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA')el.value=list.join('、');
+    else Array.from(el.options||[]).forEach(o=>{o.selected=list.includes(o.value);});
+  }
+  function refreshXjEditModeV37(){
+    const editing=!!document.getElementById('xjEditId')?.value;
+    const submit=document.getElementById('xjSubmitBtn');
+    const cancel=document.getElementById('xjCancelEditBtn');
+    if(submit)submit.textContent=editing?'更新報名':'確認報名';
+    if(cancel)cancel.style.display=editing?'inline-block':'none';
+  }
+  window.clearXjEdit=function(){
+    const edit=document.getElementById('xjEditId');if(edit)edit.value='';
+    const name=document.getElementById('name');if(name)name.value='';
+    setXjSchoolValueV37([]);
+    const day=document.getElementById('day');if(day)day.selectedIndex=0;
+    const time=document.getElementById('time');if(time)time.selectedIndex=0;
+    refreshXjEditModeV37();
+  };
+  try{clearXjEdit=window.clearXjEdit;}catch(e){}
+
+  window.editXjPlayer=function(id){
+    const p=(Array.isArray(players)?players:[]).find(item=>item.id===id);
+    if(!p)return;
+    const edit=document.getElementById('xjEditId');if(edit)edit.value=id;
+    const name=document.getElementById('name');if(name)name.value=p.name||'';
+    setXjSchoolValueV37(p.schools||[]);
+    const day=document.getElementById('day');if(day)day.value=p.day||day.value;
+    const time=document.getElementById('time');if(time)time.value=p.time||time.value;
+    refreshXjEditModeV37();
+    document.getElementById('xjPage')?.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  try{editXjPlayer=window.editXjPlayer;}catch(e){}
+
+  window.addPlayer=function(){
+    const nameEl=document.getElementById('name');
+    const schoolEl=document.getElementById('schoolSelect');
+    const dayEl=document.getElementById('day');
+    const timeEl=document.getElementById('time');
+    const editId=document.getElementById('xjEditId')?.value||'';
+    const n=nameEl?.value.trim();
+    const schools=typeof selectedSchools==='function'?selectedSchools():splitXjRolesV37(schoolEl?.value);
+    if(!n)return alert('請輸入角色名稱');
+    if(!schools.length)return alert('請至少輸入一個流派');
+    if(typeof players==='undefined')return alert('百業俠境尚未初始化，請重新整理');
+    const payload={name:n,schools,day:dayEl?.value||'',time:timeEl?.value||''};
+    const idx=editId?players.findIndex(p=>p.id===editId):-1;
+    if(idx>=0){
+      players[idx]={...players[idx],...payload,updatedAt:Date.now()};
+    }else{
+      players.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),...payload,group:(typeof nextGroup==='function'?nextGroup():1),createdAt:Date.now()});
+    }
+    if(typeof save==='function')save();
+    window.clearXjEdit();
+    if(typeof render==='function')render();
+    alert(idx>=0?'已更新':'報名完成');
+  };
+  try{addPlayer=window.addPlayer;}catch(e){}
+
+  const oldRender=window.render||render;
+  window.render=function(){
+    if(typeof oldRender==='function')oldRender();
+    const teamsEl=document.getElementById('teams');
+    if(!teamsEl)return;
+    enableXjDragV38();
+    refreshXjEditModeV37();
+  };
+  try{render=window.render;}catch(e){}
+
+  function enableXjDragV38(){
+    const teamsEl=document.getElementById('teams');
+    if(!teamsEl)return;
+    const boxes=teamsEl.querySelectorAll('.team');
+    boxes.forEach((box,index)=>{
+      const group=index+1;
+      box.ondragover=e=>{e.preventDefault();box.classList.add('dragover');};
+      box.ondragleave=()=>box.classList.remove('dragover');
+      box.ondrop=e=>drop(e,group,box);
+    });
+    const rows=teamsEl.querySelectorAll('.row[draggable]');
+    rows.forEach(row=>{
+      const start=row.getAttribute('ondragstart')||'';
+      const id=start.match(/dragging='([^']+)'/)?.[1];
+      if(!id||row.querySelector('.xjActionBtns'))return;
+      row.setAttribute('draggable','true');
+      const holder=row.querySelector('.tags');
+      if(holder)holder.insertAdjacentHTML('beforeend',`<span class="xjActionBtns"><button class="smallBtn" onclick="editXjPlayer('${id}')">編輯</button></span>`);
+    });
+  }
+  window.enableXjDragV38=enableXjDragV38;
+  setTimeout(function(){refreshXjEditModeV37();if(typeof render==='function')render();},500);
+})();
+</script>
+
+<script>
 const ZHONGZHI_PATH='zhongzhiLingxiao/signups';
 const ZHONGZHI_SCHOOLS=['霖霖','雙扇','八方奶','威威','陌奶','唐陌','影影','風風','虹虹','雙劍','玉玉','鈞鈞','釣釣','塵塵','可切換'];
 const ZHONGZHI_TIMES=['週四','週五','週六','週日'];
@@ -2621,6 +2733,9 @@ function escapeZhongzhiHtml(value){
   return String(value||'').replace(/[&<>"']/g,function(ch){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
   });
+}
+function escapeZhongzhiJs(value){
+  return String(value||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 }
 function getZhongzhiDb(){
   try{
@@ -2709,6 +2824,7 @@ function renderZhongzhiList(){
       <td>${(item.times||[]).map(escapeZhongzhiHtml).join('、')||'-'}</td>
     </tr>`;
   }).join('') || '<tr><td colspan="6" class="muted">尚無報名。</td></tr>';
+  if(typeof renderZhongzhiDragBoard==='function')renderZhongzhiDragBoard();
 }
 function zhongzhiCountRows(entries){
   if(!entries.length)return '<div class="muted">尚無資料。</div>';
@@ -2739,6 +2855,7 @@ function renderZhongzhiAdminStats(){
   if(damageEl)damageEl.innerHTML=zhongzhiRankRows(list,'totalDamage');
   const dpsEl=document.getElementById('zhongzhiDpsRank');
   if(dpsEl)dpsEl.innerHTML=zhongzhiRankRows(list,'dps');
+  if(typeof renderZhongzhiDragBoard==='function')renderZhongzhiDragBoard();
 }
 async function submitZhongzhiSignup(){
   const nameEl=document.getElementById('zhongzhiName');
@@ -2810,6 +2927,57 @@ function initZhongzhiSignup(){
   }).catch(function(){
     zhongzhiReady=false;
   });
+}
+let zhongzhiDraggingId='';
+function dragZhongzhiSignup(id){
+  zhongzhiDraggingId=id;
+}
+function zhongzhiDragOver(event){
+  event.preventDefault();
+  event.currentTarget.classList?.add('dragover');
+}
+async function dropZhongzhiToTime(event,time){
+  event.preventDefault();
+  document.querySelectorAll('#zhongzhiDragBoard .dragover').forEach(el=>el.classList.remove('dragover'));
+  if(!zhongzhiDraggingId)return;
+  const current=(zhongzhiSignups||[]).find(item=>item.id===zhongzhiDraggingId);
+  if(!current)return;
+  const next=normalizeZhongzhiSignup(current);
+  if(time){
+    next.times=Array.from(new Set([...(next.times||[]),time])).filter(item=>ZHONGZHI_TIMES.includes(item));
+  }else{
+    next.times=[];
+  }
+  next.updatedAt=Date.now();
+  zhongzhiDraggingId='';
+  upsertZhongzhiSignup(next);
+  const db=getZhongzhiDb();
+  if(db){
+    try{await db.ref(ZHONGZHI_PATH+'/'+next.id).update(next);}catch(e){}
+  }
+}
+function zhongzhiDragChip(item){
+  return `<div class="arrangeMember" draggable="true" ondragstart="dragZhongzhiSignup('${escapeZhongzhiJs(item.id)}')">
+    <span><span class="tag ${typeof cls==='function'?cls(item.school):''}">${escapeZhongzhiHtml(item.school)}</span> ${escapeZhongzhiHtml(item.name)}</span>
+    <span class="memberMeta">${formatZhongzhiWan(item.totalDamage)}</span>
+  </div>`;
+}
+function renderZhongzhiDragBoard(){
+  const board=document.getElementById('zhongzhiDragBoard');
+  if(!board)return;
+  const list=getSortedZhongzhiSignups();
+  const source=`<div class="arrangeSlot" ondragover="zhongzhiDragOver(event)" ondragleave="this.classList.remove('dragover')" ondrop="dropZhongzhiToTime(event,'')">
+    <div class="arrangeHead">全部報名者</div>
+    ${list.map(zhongzhiDragChip).join('')||'<div class="empty">尚無報名</div>'}
+  </div>`;
+  const slots=ZHONGZHI_TIMES.map(time=>{
+    const members=list.filter(item=>(item.times||[]).includes(time));
+    return `<div class="arrangeSlot" ondragover="zhongzhiDragOver(event)" ondragleave="this.classList.remove('dragover')" ondrop="dropZhongzhiToTime(event,'${time}')">
+      <div class="arrangeHead">${time}</div>
+      ${members.map(zhongzhiDragChip).join('')||'<div class="empty">拖到這裡加入時段</div>'}
+    </div>`;
+  }).join('');
+  board.innerHTML=source+slots;
 }
 setTimeout(initZhongzhiSignup,900);
 </script>
