@@ -94,6 +94,339 @@ body{background:radial-gradient(circle at 50% 0,#21170b 0,#090704 44%,#020202 10
 @media(max-width:700px){.homeBoard{width:100%;min-width:360px}.xjWrap,.baiyeWrap{padding:12px 10px 32px}.header{padding:22px 16px}h1{font-size:32px}.home-nav-command{left:87.7%;width:11.7%}}
 </style>
 
+<style>
+/* V40 望獅閣黑金武俠 UI polish: CSS-only, no flow or data changes */
+:root{
+  --ws-black:#030302;
+  --ws-ink:#090806;
+  --ws-ink-2:#12100b;
+  --ws-ink-3:#1d160c;
+  --ws-gold:#f1d28a;
+  --ws-gold-soft:#d9b46d;
+  --ws-gold-deep:#8d6125;
+  --ws-gold-line:rgba(226,178,91,.58);
+  --ws-gold-line-2:rgba(226,178,91,.28);
+  --ws-red:#8f2e24;
+  --ws-green:#5f8d41;
+  --ws-text:#f6dfaa;
+  --ws-muted:#b99c68;
+  --ws-shadow:0 18px 48px rgba(0,0,0,.52);
+}
+html{background:var(--ws-black)}
+body{
+  min-height:100vh;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.72)),
+    radial-gradient(ellipse at 50% -20%,rgba(101,66,22,.42),transparent 46%),
+    linear-gradient(135deg,#050403 0,#0d0a06 45%,#020202 100%);
+  color:var(--ws-text);
+  font-size:16px;
+  line-height:1.55;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    linear-gradient(115deg,transparent 0 34%,rgba(206,150,64,.07) 35%,transparent 48%),
+    repeating-linear-gradient(100deg,rgba(255,221,139,.035) 0 1px,transparent 1px 18px);
+  opacity:.72;
+}
+.page:not(.stage){
+  min-height:100vh;
+  padding:28px 0 56px;
+}
+.xjWrap,.baiyeWrap{
+  max-width:1240px;
+  margin:0 auto;
+  padding:24px 18px 56px;
+}
+.header{
+  padding:30px 28px!important;
+  margin-bottom:18px;
+  border:1px solid var(--ws-gold-line)!important;
+  border-radius:8px!important;
+  background:
+    linear-gradient(90deg,rgba(230,179,87,.14),transparent 48%),
+    linear-gradient(180deg,rgba(30,23,13,.98),rgba(7,6,4,.98))!important;
+  box-shadow:var(--ws-shadow),inset 0 1px 0 rgba(255,235,178,.14),inset 0 -1px 0 rgba(128,78,22,.28)!important;
+}
+.header:after{
+  content:"";
+  position:absolute;
+  left:20px;
+  right:20px;
+  bottom:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--ws-gold),transparent);
+  opacity:.54;
+}
+.header h1{
+  margin:0 0 8px;
+  font-size:clamp(30px,4vw,48px);
+  line-height:1.1;
+  color:#ffe6ad;
+  text-shadow:0 0 18px rgba(221,155,52,.38),0 2px 0 #2a1706;
+}
+.header div{
+  color:var(--ws-muted);
+  font-weight:700;
+}
+.card,.team,.arrangeSlot,.monthlyCard,.warScheduleCard,.baiyeManageLogin,.zhongzhiStat{
+  position:relative;
+  border:1px solid var(--ws-gold-line)!important;
+  border-radius:8px!important;
+  background:
+    linear-gradient(180deg,rgba(28,21,12,.98),rgba(8,7,5,.98))!important;
+  box-shadow:0 14px 36px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,229,166,.1)!important;
+}
+.card{
+  padding:20px!important;
+  margin-bottom:18px!important;
+}
+.card:before,.team:before,.arrangeSlot:before,.monthlyCard:before,.warScheduleCard:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,226,154,.08),transparent 28%,transparent 72%,rgba(161,103,32,.08));
+}
+.card .card{
+  border-color:var(--ws-gold-line-2)!important;
+  background:rgba(7,6,4,.56)!important;
+  box-shadow:inset 0 1px 0 rgba(255,229,166,.06)!important;
+}
+.title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px!important;
+  color:#ffe3a3!important;
+  font-size:22px!important;
+  line-height:1.25;
+  text-shadow:0 0 16px rgba(225,159,56,.26);
+}
+.title:before{
+  content:"";
+  width:4px;
+  height:22px;
+  border-radius:0;
+  background:linear-gradient(180deg,#fff1bf,#b57a2d);
+  box-shadow:0 0 14px rgba(230,177,83,.48);
+  flex:0 0 auto;
+}
+.note,.miniNote,small,.muted{
+  color:var(--ws-muted)!important;
+}
+label{
+  margin-bottom:7px!important;
+  color:#e8c682!important;
+  font-weight:800;
+  font-size:14px;
+}
+input,select,textarea{
+  min-height:46px;
+  border:1px solid rgba(220,169,83,.62)!important;
+  border-radius:6px!important;
+  background:
+    linear-gradient(180deg,rgba(13,11,8,.98),rgba(3,3,2,.98))!important;
+  color:var(--ws-text)!important;
+  padding:0 13px!important;
+  box-shadow:inset 0 1px 0 rgba(255,235,175,.07),0 0 0 1px rgba(0,0,0,.28)!important;
+}
+textarea{
+  min-height:128px;
+  padding:12px 13px!important;
+  line-height:1.65;
+}
+input::placeholder,textarea::placeholder{
+  color:rgba(217,180,109,.55);
+}
+input:focus,select:focus,textarea:focus{
+  outline:none!important;
+  border-color:#f3d18b!important;
+  box-shadow:0 0 0 3px rgba(231,184,96,.16),inset 0 1px 0 rgba(255,240,188,.09)!important;
+}
+button,.submit,.smallBtn,.sessionTab{
+  min-height:42px;
+  border:1px solid rgba(255,230,160,.52)!important;
+  border-radius:6px!important;
+  background:
+    linear-gradient(180deg,#ffe6a8 0,#d49b4b 44%,#805019 100%)!important;
+  color:#1a0e04!important;
+  font-weight:900!important;
+  text-shadow:0 1px 0 rgba(255,239,196,.45);
+  box-shadow:0 10px 22px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,250,219,.62),inset 0 -1px 0 rgba(66,35,8,.34)!important;
+  transition:transform .14s ease,filter .14s ease,box-shadow .14s ease;
+}
+button:hover,.submit:hover,.smallBtn:hover,.sessionTab:hover{
+  filter:brightness(1.08);
+  transform:translateY(-1px);
+}
+button:active,.submit:active,.smallBtn:active,.sessionTab:active{
+  transform:translateY(0);
+}
+.danger{
+  border-color:rgba(255,154,130,.42)!important;
+  background:linear-gradient(180deg,#b64a39,#78251d 62%,#45100d)!important;
+  color:#fff2e8!important;
+  text-shadow:none;
+}
+.backBtn{
+  width:auto!important;
+  min-width:128px;
+  margin-bottom:14px!important;
+}
+.form,.baiyeForm,.memberForm,.zhongzhiForm,.monthlyTools,.adminForm,.viewForm{
+  gap:14px!important;
+}
+.sessionGrid,.sessionTabs,.teams,.arrangeBoard,.monthlySummary,.zhongzhiStats,.baiyeGrid{
+  gap:14px!important;
+}
+.sessionCheck,.roleCheckGrid label{
+  min-height:46px;
+  border:1px solid rgba(220,169,83,.48)!important;
+  border-radius:6px!important;
+  background:
+    linear-gradient(180deg,rgba(20,16,10,.96),rgba(6,5,4,.96))!important;
+  color:var(--ws-text)!important;
+  box-shadow:inset 0 1px 0 rgba(255,229,166,.08);
+  transition:border-color .14s ease,background .14s ease,box-shadow .14s ease;
+}
+.roleCheckGrid{
+  gap:8px!important;
+  border:1px solid rgba(220,169,83,.34)!important;
+  background:rgba(5,4,3,.72)!important;
+}
+.sessionCheck input,.roleCheckGrid input[type="checkbox"]{
+  width:16px!important;
+  height:16px!important;
+  min-height:16px!important;
+  accent-color:#d6a24f;
+}
+.sessionCheck:has(input:checked),.roleCheckGrid label:has(input:checked){
+  border-color:#f1d28a!important;
+  background:linear-gradient(180deg,rgba(71,48,18,.98),rgba(19,13,6,.98))!important;
+  box-shadow:0 0 0 2px rgba(241,210,138,.09),inset 0 1px 0 rgba(255,238,181,.18);
+}
+.listTable{
+  border-collapse:separate!important;
+  border-spacing:0;
+  overflow:hidden;
+  border:1px solid rgba(220,169,83,.36);
+  border-radius:8px;
+  background:rgba(5,4,3,.72);
+}
+.listTable th{
+  position:sticky;
+  top:0;
+  z-index:1;
+  padding:12px 11px!important;
+  border-bottom:1px solid rgba(234,185,94,.48)!important;
+  background:
+    linear-gradient(180deg,rgba(53,36,16,.98),rgba(23,16,8,.98))!important;
+  color:#ffe6ad!important;
+  font-size:14px;
+  font-weight:900;
+}
+.listTable td{
+  padding:12px 11px!important;
+  border-bottom:1px solid rgba(220,169,83,.2)!important;
+  background:rgba(6,5,4,.28);
+}
+.listTable tr:nth-child(even) td{
+  background:rgba(39,27,12,.24);
+}
+.listTable tr:hover td{
+  background:rgba(91,63,24,.26);
+}
+.tag,.pill,.memberBadge,.roleCount,.chip{
+  border:1px solid rgba(255,228,159,.28);
+  border-radius:6px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 4px 12px rgba(0,0,0,.22);
+}
+.chip{
+  background:linear-gradient(180deg,rgba(30,23,13,.96),rgba(8,7,5,.96))!important;
+  color:var(--ws-text);
+}
+.team,.arrangeSlot{
+  min-height:180px;
+}
+.teamHead,.arrangeHead{
+  border-radius:6px;
+  background:linear-gradient(180deg,rgba(58,39,17,.98),rgba(20,14,7,.98))!important;
+  border:1px solid rgba(226,178,91,.34);
+  padding:9px!important;
+}
+.row,.arrangeMember,.hrow{
+  border-color:rgba(226,178,91,.24)!important;
+}
+.status{
+  border:1px solid rgba(171,223,125,.34);
+  border-radius:6px!important;
+  background:linear-gradient(180deg,rgba(54,88,34,.95),rgba(19,45,20,.95))!important;
+}
+.status.full{
+  border-color:rgba(255,146,121,.42);
+  background:linear-gradient(180deg,rgba(144,47,36,.95),rgba(78,18,14,.95))!important;
+}
+.zhongzhiStat,.monthlyCard{
+  min-height:92px;
+}
+.zhongzhiStatNum,.monthlyNum{
+  margin-top:6px;
+  color:#ffe4a3!important;
+  text-shadow:0 0 18px rgba(229,164,60,.3);
+}
+.memberTableWrap,.zhongzhiListWrap{
+  border:1px solid rgba(220,169,83,.4)!important;
+  border-radius:8px!important;
+  background:rgba(4,3,2,.65);
+}
+.homeBoard{
+  border:1px solid rgba(224,178,92,.38);
+  border-radius:0;
+}
+.homeBoard .hotspot{
+  border-radius:4px!important;
+}
+.homeBoard .hotspot:hover,.homeBoard .hotspot:focus-visible{
+  background:rgba(255,221,139,.13)!important;
+  box-shadow:0 0 0 1px rgba(255,232,162,.7),0 0 24px rgba(240,186,82,.55)!important;
+}
+.home-nav-main{left:30.0%!important;top:3.72%!important;width:5.5%!important;height:2.2%!important}
+.home-nav-war{left:37.6%!important;top:3.72%!important;width:10.1%!important;height:2.2%!important}
+.home-nav-xj{left:49.8%!important;top:3.72%!important;width:8.8%!important;height:2.2%!important}
+.home-nav-zhongzhi{left:61.2%!important;top:3.72%!important;width:9.0%!important;height:2.2%!important}
+.home-nav-members{left:72.4%!important;top:3.72%!important;width:8.8%!important;height:2.2%!important}
+.home-nav-monthly{left:81.6%!important;top:3.72%!important;width:6.8%!important;height:2.2%!important}
+.home-nav-command{left:88.5%!important;top:3.18%!important;width:10.7%!important;height:3.15%!important}
+#xjPage .del{display:inline-flex!important;align-items:center;justify-content:center;width:auto!important;min-width:58px!important;height:30px!important;border-radius:6px!important;padding:0 10px!important;margin-left:6px!important;font-size:13px!important}
+@media(max-width:900px){
+  .page:not(.stage){padding:14px 0 36px}
+  .xjWrap,.baiyeWrap{padding:14px 10px 38px}
+  .header{padding:24px 18px!important}
+  .card{padding:16px!important}
+  .form,.baiyeForm,.memberForm,.memberTop,.memberTools,.monthlyTools,.monthlySummary,.adminForm,.viewForm,.baiyeGrid,.zhongzhiGrid,.zhongzhiStats,.sessionGrid,.sessionTabs,.teams,.arrangeBoard{
+    grid-template-columns:1fr!important;
+  }
+  .memberTools input,.memberTools select,.submit,button{max-width:100%;width:100%}
+  .listTable{font-size:14px}
+  .listTable th,.listTable td{padding:10px 9px!important}
+  .title{font-size:20px!important}
+}
+@media(max-width:520px){
+  body{font-size:15px}
+  .homeBoard{min-width:0!important;width:100%!important}
+  .header h1{font-size:30px}
+  input,select,button{font-size:15px!important}
+  .roleCheckGrid{grid-template-columns:1fr!important}
+}
+</style>
+
 </head><body><section id="homePage" class="page stage active">
   <div class="board homeBoard">
     <img class="bg" src="assets/wangshi-home.png" alt="望獅閣 GVG 百業首頁">
@@ -126,7 +459,7 @@ body{background:radial-gradient(circle at 50% 0,#21170b 0,#090704 44%,#020202 10
           <div><label>可打時間</label><select id="time"><option>21:30</option><option>22:00</option><option>22:30</option><option>23:00</option></select></div>
       </div><button class="submit" onclick="addPlayer()">確認報名</button>
     </section>
-    <section class="card"><div class="title">分隊表</div><div id="teams" class="teams"></div><div class="note">第一組、第二組、第三組固定顯示；未滿 10 人顯示招募中，滿 10 人顯示已滿。</div></section>
+    <section class="card"><div class="title">分隊表</div><div class="memberTop"><button id="clearXjAllBtn" class="danger" style="width:180px" onclick="clearAllXjSignups()">清除全部報名</button></div><div id="teams" class="teams"></div><div class="note">第一組、第二組、第三組固定顯示；未滿 10 人顯示招募中，滿 10 人顯示已滿。</div></section>
   </div>
 </section>
 
@@ -2588,6 +2921,31 @@ setTimeout(function(){
     if(typeof renderBaiyeArrange==='function')renderBaiyeArrange();
     if(typeof renderBaiyeSignup==='function')renderBaiyeSignup();
   },900);
+})();
+</script>
+
+<script>
+/* V41_XIAJING_REMOVE_SIGNUP */
+(function(){
+  window.delPlayer=function(id){
+    if(!confirm('確定移除此報名？'))return;
+    if(typeof players==='undefined')return;
+    players=players.filter(p=>p.id!==id);
+    if(typeof save==='function')save();
+    if(typeof render==='function')render();
+  };
+  window.clearAllXjSignups=function clearAllXjSignups(){
+    if(typeof players==='undefined')return alert('百業俠境尚未初始化，請重新整理');
+    if(!players.length)return alert('目前沒有百業俠境報名');
+    if(!confirm('確定清除全部百業俠境報名？'))return;
+    if(!confirm('再次確認：這會清空全部百業俠境分隊資料，確定嗎？'))return;
+    players=[];
+    if(typeof save==='function')save();
+    if(typeof render==='function')render();
+    alert('已清除全部百業俠境報名');
+  };
+  try{delPlayer=window.delPlayer;}catch(e){}
+  try{clearAllXjSignups=window.clearAllXjSignups;}catch(e){}
 })();
 </script>
 
