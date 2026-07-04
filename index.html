@@ -397,13 +397,13 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
   background:rgba(255,221,139,.13)!important;
   box-shadow:0 0 0 1px rgba(255,232,162,.7),0 0 24px rgba(240,186,82,.55)!important;
 }
-.home-nav-main{left:30.0%!important;top:3.72%!important;width:5.5%!important;height:2.2%!important}
-.home-nav-war{left:37.6%!important;top:3.72%!important;width:10.1%!important;height:2.2%!important}
-.home-nav-xj{left:49.8%!important;top:3.72%!important;width:8.8%!important;height:2.2%!important}
-.home-nav-zhongzhi{left:61.2%!important;top:3.72%!important;width:9.0%!important;height:2.2%!important}
-.home-nav-members{left:72.4%!important;top:3.72%!important;width:8.8%!important;height:2.2%!important}
-.home-nav-monthly{left:81.6%!important;top:3.72%!important;width:6.8%!important;height:2.2%!important}
-.home-nav-command{left:88.5%!important;top:3.18%!important;width:10.7%!important;height:3.15%!important}
+.home-nav-main{left:29.69%!important;top:3.65%!important;width:5.08%!important;height:2.86%!important}
+.home-nav-war{left:37.30%!important;top:3.65%!important;width:9.18%!important;height:2.86%!important}
+.home-nav-xj{left:50.00%!important;top:3.65%!important;width:8.59%!important;height:2.86%!important}
+.home-nav-zhongzhi{left:61.13%!important;top:3.65%!important;width:8.59%!important;height:2.86%!important}
+.home-nav-members{left:72.66%!important;top:3.65%!important;width:8.59%!important;height:2.86%!important}
+.home-nav-monthly{left:80.08%!important;top:3.65%!important;width:8.01%!important;height:2.86%!important}
+.home-nav-command{left:88.38%!important;top:3.12%!important;width:10.94%!important;height:2.93%!important}
 #xjPage .del{display:inline-flex!important;align-items:center;justify-content:center;width:auto!important;min-width:58px!important;height:30px!important;border-radius:6px!important;padding:0 10px!important;margin-left:6px!important;font-size:13px!important}
 @media(max-width:900px){
   .page:not(.stage){padding:14px 0 36px}
@@ -459,6 +459,7 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
           <div><label>可打時間</label><select id="time"><option>21:30</option><option>22:00</option><option>22:30</option><option>23:00</option></select></div>
       </div><button class="submit" onclick="addPlayer()">確認報名</button>
     </section>
+    <section class="card"><div class="title">分隊調整</div><div class="admin"><div><label>通行碼</label><input id="adminPw" type="password" placeholder="請輸入通行碼"></div><button onclick="login()">開啟拖拉</button></div><div class="note">開啟後可拖曳調整隊伍。</div></section>
     <section class="card"><div class="title">分隊表</div><div class="memberTop"><button id="clearXjAllBtn" class="danger" style="width:180px" onclick="clearAllXjSignups()">清除全部報名</button></div><div id="teams" class="teams"></div><div class="note">第一組、第二組、第三組固定顯示；未滿 10 人顯示招募中，滿 10 人顯示已滿。</div></section>
   </div>
 </section>
@@ -2944,8 +2945,18 @@ setTimeout(function(){
     if(typeof render==='function')render();
     alert('已清除全部百業俠境報名');
   };
+  window.login=function(){
+    const input=document.getElementById('adminPw');
+    const password=typeof BAIYE_ADMIN_PASSWORD_V20!=='undefined'?BAIYE_ADMIN_PASSWORD_V20:'yanyun888';
+    if(!input || input.value!==password)return alert('通行碼不正確');
+    admin=true;
+    input.value='';
+    if(typeof render==='function')render();
+    alert('管理員登入成功');
+  };
   try{delPlayer=window.delPlayer;}catch(e){}
   try{clearAllXjSignups=window.clearAllXjSignups;}catch(e){}
+  try{login=window.login;}catch(e){}
 })();
 </script>
 
