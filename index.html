@@ -459,7 +459,8 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
         <div><label>流派</label><input id="schoolSelect" placeholder="例如：霖霖、雙扇"><small>可直接輸入多個流派，以 、 或 , 分隔。</small></div>
           <div><label>可打星期</label><select id="day"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option><option>星期六</option><option>星期日</option></select></div>
           <div><label>可打時間</label><select id="time"><option>21:30</option><option>22:00</option><option>22:30</option><option>23:00</option></select></div>
-          <div><label>報名車別</label><select id="xjGroupChoice"><option value="normal">一般分隊</option><option value="talent">天賦車</option></select></div>
+          <div><label>報名車別</label><select id="xjGroupChoice" onchange="updateXjTalentChoice()"><option value="normal">一般分隊</option><option value="talent">天賦車</option></select></div>
+          <div id="xjTalentChoiceWrap" style="display:none"><label>天賦車選項</label><select id="xjTalentChoice"><option value="">請選擇</option><option value="萬壑化龍吟">萬壑化龍吟</option><option value="風饕五殘災">風饕五殘災</option></select></div>
       </div><button class="submit" onclick="addPlayer()">確認報名</button>
     </section>
     <section class="card"><div class="title">分隊調整</div><div class="admin"><div><label>通行碼</label><input id="adminPw" type="password" placeholder="請輸入通行碼"></div><button onclick="login()">開啟拖拉</button></div><div class="note">開啟後可拖曳調整隊伍。</div></section>
@@ -2482,6 +2483,18 @@ function selectedXjGroup(){
   if(choice==='talent')return 7;
   return typeof nextGroup==='function'?nextGroup():1;
 }
+function selectedXjTalentType(){
+  const choice=document.getElementById('xjGroupChoice')?.value;
+  if(choice!=='talent')return '';
+  return document.getElementById('xjTalentChoice')?.value||'';
+}
+function updateXjTalentChoice(){
+  const isTalent=document.getElementById('xjGroupChoice')?.value==='talent';
+  const wrap=document.getElementById('xjTalentChoiceWrap');
+  const select=document.getElementById('xjTalentChoice');
+  if(wrap)wrap.style.display=isTalent?'block':'none';
+  if(!isTalent&&select)select.value='';
+}
 function render(){
   document.body.classList.toggle('adminOn',admin);
   const teamsEl=document.getElementById('teams');
@@ -2499,7 +2512,7 @@ function render(){
     let rows='';
     for(let i=0;i<MAX;i++){
       const p=list[i];
-      rows+=p?`<div class="row" draggable="${admin}" ondragstart="xjDragStart('${p.id}')"><div class="num">${i+1}</div><div><div>${p.name}</div><small>${p.day} ${formatXjTimeV36(p.time)}</small></div><div class="tags">${p.schools.map(s=>`<span class="tag ${cls(s)}">${s}</span>`).join('')}<button class="del" onclick="delPlayer('${p.id}')">×</button></div></div>`:`<div class="row"><div class="num">${i+1}</div><div class="empty">空位</div><div></div></div>`;
+      rows+=p?`<div class="row" draggable="${admin}" ondragstart="xjDragStart('${p.id}')"><div class="num">${i+1}</div><div><div>${p.name}</div><small>${p.day} ${formatXjTimeV36(p.time)}${p.group===7&&p.talentType?`｜${p.talentType}`:''}</small></div><div class="tags">${p.schools.map(s=>`<span class="tag ${cls(s)}">${s}</span>`).join('')}<button class="del" onclick="delPlayer('${p.id}')">×</button></div></div>`:`<div class="row"><div class="num">${i+1}</div><div class="empty">空位</div><div></div></div>`;
     }
     box.innerHTML=`<div class="teamHead"><div class="teamName">${g===7?'天賦車':`第${g}車`}</div><div class="count">(${list.length}/10)</div><div class="status ${full?'full':''}">${full?'已滿':'招募中'}</div></div>${rows}`;
     teamsEl.appendChild(box);
@@ -2509,6 +2522,7 @@ setTimeout(function(){
   renderXjMemberListV27();
   const input=document.getElementById('name');
   if(input)input.addEventListener('input',fillXjByMemberV27);
+  if(typeof updateXjTalentChoice==='function')updateXjTalentChoice();
   if(typeof render==='function')render();
 },1000);
 </script>
@@ -2879,8 +2893,8 @@ setTimeout(function(){
 
   const XJ_PATH_V33='baiyeXiajing/players';
   let xjReadyV33=false, xjSavingV33=false;
-  function xjObjV33(list){const obj={};(list||[]).forEach(p=>{if(!p.id)p.id=Date.now().toString(36)+Math.random().toString(36).slice(2);obj[p.id]={id:p.id,name:p.name||'',schools:Array.isArray(p.schools)?p.schools:[],day:p.day||'',time:p.time||'',group:p.group||1,createdAt:p.createdAt||Date.now()};});return obj;}
-  function xjListV33(obj){return Object.values(obj||{}).map(p=>({id:p.id||'',name:p.name||'',schools:Array.isArray(p.schools)?p.schools:[],day:p.day||'',time:p.time||'',group:p.group||1,createdAt:p.createdAt||0})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));}
+  function xjObjV33(list){const obj={};(list||[]).forEach(p=>{if(!p.id)p.id=Date.now().toString(36)+Math.random().toString(36).slice(2);obj[p.id]={id:p.id,name:p.name||'',schools:Array.isArray(p.schools)?p.schools:[],day:p.day||'',time:p.time||'',group:p.group||1,talentType:p.talentType||'',createdAt:p.createdAt||Date.now()};});return obj;}
+  function xjListV33(obj){return Object.values(obj||{}).map(p=>({id:p.id||'',name:p.name||'',schools:Array.isArray(p.schools)?p.schools:[],day:p.day||'',time:p.time||'',group:p.group||1,talentType:p.talentType||'',createdAt:p.createdAt||0})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));}
   function saveXjLocalV33(){try{localStorage.setItem('wangshi_xiajing_working_v5',JSON.stringify(players||[]));}catch(e){}}
 
   window.save=function(){
@@ -2899,17 +2913,22 @@ setTimeout(function(){
     const dayEl=document.getElementById('day');
     const timeEl=document.getElementById('time');
     const groupChoiceEl=document.getElementById('xjGroupChoice');
+    const talentChoiceEl=document.getElementById('xjTalentChoice');
     const n=nameEl?.value.trim();
     const schools=window.selectedSchools();
     if(!n)return alert('請輸入角色名稱');
     if(!schools.length)return alert('請至少輸入一個流派');
     if(typeof players==='undefined')return alert('百業俠境尚未初始化，請重新整理');
     const group=typeof selectedXjGroup==='function'?selectedXjGroup():(typeof nextGroup==='function'?nextGroup():1);
+    const talentType=typeof selectedXjTalentType==='function'?selectedXjTalentType():'';
     if(group===7&&typeof count==='function'&&count(7)>=MAX)return alert('天賦車已滿');
-    players.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),name:n,schools,day:dayEl?.value||'',time:timeEl?.value||'',group,createdAt:Date.now()});
+    if(group===7&&!talentType)return alert('請選擇天賦車選項');
+    players.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),name:n,schools,day:dayEl?.value||'',time:timeEl?.value||'',group,talentType,createdAt:Date.now()});
     if(nameEl)nameEl.value='';
     if(schoolEl){if(schoolEl.tagName==='INPUT'||schoolEl.tagName==='TEXTAREA')schoolEl.value='';else Array.from(schoolEl.options||[]).forEach(o=>o.selected=false);}
     if(groupChoiceEl)groupChoiceEl.value='normal';
+    if(talentChoiceEl)talentChoiceEl.value='';
+    if(typeof updateXjTalentChoice==='function')updateXjTalentChoice();
     if(typeof save==='function')save();
     if(typeof render==='function')render();
   };
