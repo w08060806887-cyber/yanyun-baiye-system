@@ -459,6 +459,7 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
         <div><label>流派</label><input id="schoolSelect" placeholder="例如：霖霖、雙扇"><small>可直接輸入多個流派，以 、 或 , 分隔。</small></div>
           <div><label>可打星期</label><select id="day"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option><option>星期六</option><option>星期日</option></select></div>
           <div><label>可打時間</label><select id="time"><option>21:30</option><option>22:00</option><option>22:30</option><option>23:00</option></select></div>
+          <div><label>報名車別</label><select id="xjGroupChoice"><option value="normal">一般分隊</option><option value="talent">天賦車</option></select></div>
       </div><button class="submit" onclick="addPlayer()">確認報名</button>
     </section>
     <section class="card"><div class="title">分隊調整</div><div class="admin"><div><label>通行碼</label><input id="adminPw" type="password" placeholder="請輸入通行碼"></div><button onclick="login()">開啟拖拉</button></div><div class="note">開啟後可拖曳調整隊伍。</div></section>
@@ -2473,8 +2474,13 @@ function fillXjByMemberV27(){
   }
 }
 function nextGroup(){
-  for(let i=1;i<=7;i++){if(count(i)<MAX)return i}
-  return 7;
+  for(let i=1;i<=6;i++){if(count(i)<MAX)return i}
+  return 6;
+}
+function selectedXjGroup(){
+  const choice=document.getElementById('xjGroupChoice')?.value;
+  if(choice==='talent')return 7;
+  return typeof nextGroup==='function'?nextGroup():1;
 }
 function render(){
   document.body.classList.toggle('adminOn',admin);
@@ -2892,14 +2898,18 @@ setTimeout(function(){
     const schoolEl=document.getElementById('schoolSelect');
     const dayEl=document.getElementById('day');
     const timeEl=document.getElementById('time');
+    const groupChoiceEl=document.getElementById('xjGroupChoice');
     const n=nameEl?.value.trim();
     const schools=window.selectedSchools();
     if(!n)return alert('請輸入角色名稱');
     if(!schools.length)return alert('請至少輸入一個流派');
     if(typeof players==='undefined')return alert('百業俠境尚未初始化，請重新整理');
-    players.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),name:n,schools,day:dayEl?.value||'',time:timeEl?.value||'',group:(typeof nextGroup==='function'?nextGroup():1),createdAt:Date.now()});
+    const group=typeof selectedXjGroup==='function'?selectedXjGroup():(typeof nextGroup==='function'?nextGroup():1);
+    if(group===7&&typeof count==='function'&&count(7)>=MAX)return alert('天賦車已滿');
+    players.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2),name:n,schools,day:dayEl?.value||'',time:timeEl?.value||'',group,createdAt:Date.now()});
     if(nameEl)nameEl.value='';
     if(schoolEl){if(schoolEl.tagName==='INPUT'||schoolEl.tagName==='TEXTAREA')schoolEl.value='';else Array.from(schoolEl.options||[]).forEach(o=>o.selected=false);}
+    if(groupChoiceEl)groupChoiceEl.value='normal';
     if(typeof save==='function')save();
     if(typeof render==='function')render();
   };
