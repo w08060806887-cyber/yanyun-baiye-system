@@ -407,6 +407,7 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
 #xjPage .del,#xjPage .xjAdminOnly{display:none!important}
 .adminOn #xjPage .del,.adminOn #xjPage .xjAdminOnly{display:inline-flex!important;align-items:center;justify-content:center}
 #xjPage .del{width:auto!important;min-width:58px!important;height:30px!important;border-radius:6px!important;padding:0 10px!important;margin-left:6px!important;font-size:13px!important}
+#xjPage .xjTalentTag{background:linear-gradient(180deg,#ffe6a8,#ad7426)!important;color:#1b1005!important;border:1px solid rgba(255,235,176,.7)}
 @media(max-width:900px){
   .page:not(.stage){padding:14px 0 36px}
   .xjWrap,.baiyeWrap{padding:14px 10px 38px}
@@ -2333,6 +2334,7 @@ setTimeout(insertClearButtonsV25,800);
         day:p.day||'',
         time:p.time||'',
         group:p.group||1,
+        talentType:p.talentType||'',
         createdAt:p.createdAt||Date.now()
       };
     });
@@ -2346,6 +2348,7 @@ setTimeout(insertClearButtonsV25,800);
       day:p.day||'',
       time:p.time||'',
       group:p.group||1,
+      talentType:p.talentType||'',
       createdAt:p.createdAt||0
     })).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
   }
@@ -2512,7 +2515,7 @@ function render(){
     let rows='';
     for(let i=0;i<MAX;i++){
       const p=list[i];
-      rows+=p?`<div class="row" draggable="${admin}" ondragstart="xjDragStart('${p.id}')"><div class="num">${i+1}</div><div><div>${p.name}</div><small>${p.day} ${formatXjTimeV36(p.time)}${p.group===7&&p.talentType?`｜${p.talentType}`:''}</small></div><div class="tags">${p.schools.map(s=>`<span class="tag ${cls(s)}">${s}</span>`).join('')}<button class="del" onclick="delPlayer('${p.id}')">×</button></div></div>`:`<div class="row"><div class="num">${i+1}</div><div class="empty">空位</div><div></div></div>`;
+      rows+=p?`<div class="row" draggable="${admin}" ondragstart="xjDragStart('${p.id}')"><div class="num">${i+1}</div><div><div>${p.name}</div><small>${p.day} ${formatXjTimeV36(p.time)}</small></div><div class="tags">${p.group===7&&p.talentType?`<span class="tag xjTalentTag">${p.talentType}</span>`:''}${p.schools.map(s=>`<span class="tag ${cls(s)}">${s}</span>`).join('')}<button class="del" onclick="delPlayer('${p.id}')">×</button></div></div>`:`<div class="row"><div class="num">${i+1}</div><div class="empty">空位</div><div></div></div>`;
     }
     box.innerHTML=`<div class="teamHead"><div class="teamName">${g===7?'天賦車':`第${g}車`}</div><div class="count">(${list.length}/10)</div><div class="status ${full?'full':''}">${full?'已滿':'招募中'}</div></div>${rows}`;
     teamsEl.appendChild(box);
