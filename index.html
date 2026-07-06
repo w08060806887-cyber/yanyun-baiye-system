@@ -404,7 +404,9 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
 .home-nav-members{left:72.85%!important;top:3.91%!important;width:7.03%!important;height:1.82%!important}
 .home-nav-monthly{left:80.86%!important;top:3.91%!important;width:7.03%!important;height:1.82%!important}
 .home-nav-command{left:88.48%!important;top:3.12%!important;width:10.94%!important;height:2.86%!important}
-#xjPage .del{display:inline-flex!important;align-items:center;justify-content:center;width:auto!important;min-width:58px!important;height:30px!important;border-radius:6px!important;padding:0 10px!important;margin-left:6px!important;font-size:13px!important}
+#xjPage .del,#xjPage .xjAdminOnly{display:none!important}
+.adminOn #xjPage .del,.adminOn #xjPage .xjAdminOnly{display:inline-flex!important;align-items:center;justify-content:center}
+#xjPage .del{width:auto!important;min-width:58px!important;height:30px!important;border-radius:6px!important;padding:0 10px!important;margin-left:6px!important;font-size:13px!important}
 @media(max-width:900px){
   .page:not(.stage){padding:14px 0 36px}
   .xjWrap,.baiyeWrap{padding:14px 10px 38px}
@@ -460,7 +462,7 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
       </div><button class="submit" onclick="addPlayer()">確認報名</button>
     </section>
     <section class="card"><div class="title">分隊調整</div><div class="admin"><div><label>通行碼</label><input id="adminPw" type="password" placeholder="請輸入通行碼"></div><button onclick="login()">開啟拖拉</button></div><div class="note">開啟後可拖曳調整隊伍。</div></section>
-    <section class="card"><div class="title">分隊表</div><div class="memberTop"><button id="clearXjAllBtn" class="danger" style="width:180px" onclick="clearAllXjSignups()">清除全部報名</button></div><div id="teams" class="teams"></div><div class="note">第一組、第二組、第三組固定顯示；未滿 10 人顯示招募中，滿 10 人顯示已滿。</div></section>
+    <section class="card"><div class="title">分隊表</div><div class="memberTop"><button id="clearXjAllBtn" class="danger xjAdminOnly" style="width:180px" onclick="clearAllXjSignups()">清除全部報名</button></div><div id="teams" class="teams"></div><div class="note">第一車至第六車正常分隊；第七車為天賦車。未滿 10 人顯示招募中，滿 10 人顯示已滿。</div></section>
   </div>
 </section>
 
@@ -2471,8 +2473,8 @@ function fillXjByMemberV27(){
   }
 }
 function nextGroup(){
-  for(let i=1;i<=6;i++){if(count(i)<MAX)return i}
-  return 6;
+  for(let i=1;i<=7;i++){if(count(i)<MAX)return i}
+  return 7;
 }
 function render(){
   document.body.classList.toggle('adminOn',admin);
@@ -2480,7 +2482,7 @@ function render(){
   if(!teamsEl)return;
   teamsEl.innerHTML='';
   renderXjMemberListV27();
-  for(let g=1;g<=6;g++){
+  for(let g=1;g<=7;g++){
     const list=players.filter(p=>p.group===g);
     const full=list.length>=MAX;
     const box=document.createElement('div');
@@ -2491,9 +2493,9 @@ function render(){
     let rows='';
     for(let i=0;i<MAX;i++){
       const p=list[i];
-      rows+=p?`<div class="row" draggable="${admin}" ondragstart="dragging='${p.id}'"><div class="num">${i+1}</div><div><div>${p.name}</div><small>${p.day} ${formatXjTimeV36(p.time)}</small></div><div class="tags">${p.schools.map(s=>`<span class="tag ${cls(s)}">${s}</span>`).join('')}<button class="del" onclick="delPlayer('${p.id}')">×</button></div></div>`:`<div class="row"><div class="num">${i+1}</div><div class="empty">空位</div><div></div></div>`;
+      rows+=p?`<div class="row" draggable="${admin}" ondragstart="xjDragStart('${p.id}')"><div class="num">${i+1}</div><div><div>${p.name}</div><small>${p.day} ${formatXjTimeV36(p.time)}</small></div><div class="tags">${p.schools.map(s=>`<span class="tag ${cls(s)}">${s}</span>`).join('')}<button class="del" onclick="delPlayer('${p.id}')">×</button></div></div>`:`<div class="row"><div class="num">${i+1}</div><div class="empty">空位</div><div></div></div>`;
     }
-    box.innerHTML=`<div class="teamHead"><div class="teamName">第${g}車</div><div class="count">(${list.length}/10)</div><div class="status ${full?'full':''}">${full?'已滿':'招募中'}</div></div>${rows}`;
+    box.innerHTML=`<div class="teamHead"><div class="teamName">${g===7?'天賦車':`第${g}車`}</div><div class="count">(${list.length}/10)</div><div class="status ${full?'full':''}">${full?'已滿':'招募中'}</div></div>${rows}`;
     teamsEl.appendChild(box);
   }
 }
@@ -2928,7 +2930,27 @@ setTimeout(function(){
 <script>
 /* V41_XIAJING_REMOVE_SIGNUP */
 (function(){
+  window.xjDragStart=function(id){
+    if(!admin)return;
+    dragging=id;
+    window.xjDragging=id;
+  };
+  window.drop=function(e,g,box){
+    e.preventDefault();
+    box.classList.remove('dragover');
+    if(!admin)return;
+    const id=dragging||window.xjDragging;
+    const p=players.find(x=>x.id===id);
+    if(!p)return;
+    if(count(g)>=MAX&&p.group!==g)return alert('這組已滿');
+    p.group=g;
+    dragging=null;
+    window.xjDragging=null;
+    if(typeof save==='function')save();
+    if(typeof render==='function')render();
+  };
   window.delPlayer=function(id){
+    if(!admin)return alert('請先開啟分隊調整');
     if(!confirm('確定移除此報名？'))return;
     if(typeof players==='undefined')return;
     players=players.filter(p=>p.id!==id);
@@ -2936,6 +2958,7 @@ setTimeout(function(){
     if(typeof render==='function')render();
   };
   window.clearAllXjSignups=function clearAllXjSignups(){
+    if(!admin)return alert('請先開啟分隊調整');
     if(typeof players==='undefined')return alert('百業俠境尚未初始化，請重新整理');
     if(!players.length)return alert('目前沒有百業俠境報名');
     if(!confirm('確定清除全部百業俠境報名？'))return;
@@ -2954,6 +2977,8 @@ setTimeout(function(){
     if(typeof render==='function')render();
     alert('管理員登入成功');
   };
+  try{xjDragStart=window.xjDragStart;}catch(e){}
+  try{drop=window.drop;}catch(e){}
   try{delPlayer=window.delPlayer;}catch(e){}
   try{clearAllXjSignups=window.clearAllXjSignups;}catch(e){}
   try{login=window.login;}catch(e){}
