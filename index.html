@@ -9,7 +9,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,san
 .arrangeToolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}.arrangeGrid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #8f6427;background:#0d0b09}.arrangeSlot{min-height:145px;border-right:1px solid rgba(143,100,39,.55);border-bottom:1px solid rgba(143,100,39,.55)}.arrangeSlot:nth-child(3),.arrangeSlot:nth-child(6){border-right:none}.arrangeSlot:nth-child(n+4){border-bottom:none}.arrangeHead{background:#2a1e10;color:#ffe29b;font-weight:900;text-align:center;padding:8px;border-bottom:1px solid rgba(143,100,39,.55)}.arrangeBody{padding:8px}.arrangeMember{display:flex;justify-content:space-between;gap:6px;align-items:center;border-bottom:1px solid rgba(143,100,39,.22);padding:6px 2px;line-height:1.5}.horizontalRows{border:1px solid #8f6427;background:#0d0b09}.hrow{display:grid;grid-template-columns:80px 1fr;border-bottom:1px solid rgba(143,100,39,.35);min-height:42px}.hrow:last-child{border-bottom:none}.hlabel{background:#2a1e10;color:#ffe29b;font-weight:900;display:flex;align-items:center;justify-content:center}.hcontent{padding:9px;line-height:1.8}.unassigned{display:flex;gap:8px;flex-wrap:wrap}.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(143,100,39,.7);border-radius:6px;padding:6px 9px;background:#17120c}.assignTable{width:100%;border-collapse:collapse}.assignTable th,.assignTable td{border-bottom:1px solid rgba(143,100,39,.25);padding:8px;text-align:left}.assignTable select{height:36px}.copyBox{width:100%;min-height:120px;margin-top:10px;line-height:1.7}@media(max-width:900px){.arrangeGrid{grid-template-columns:1fr}.arrangeSlot,.arrangeSlot:nth-child(3),.arrangeSlot:nth-child(6),.arrangeSlot:nth-child(n+4){border-right:none;border-bottom:1px solid rgba(143,100,39,.55)}.hrow{grid-template-columns:64px 1fr}}
 
 /* 百業戰 V2：保留原本黑金皮膚，只新增場次與拖曳編排 */
-.sessionGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 16px}.sessionCheck,.sessionTab{border:1px solid #8f6427;border-radius:8px;background:#0d0b09;color:#f1d28a;padding:10px;cursor:pointer;text-align:center;font-weight:900}.sessionCheck{display:flex;align-items:center;gap:8px;text-align:left}.sessionCheck input{width:auto;height:auto}.sessionTab.active{background:linear-gradient(#e7c27d,#9f6423);color:#170d05}.sessionTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 16px}.baiyeBar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}.baiyeCount{font-weight:900;color:#f1d28a}.arrangeBoard{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.arrangeSlot{min-height:180px;border:1px solid #8f6427;border-radius:10px;background:#0d0b09;padding:12px}.arrangeSlot.dragover{outline:3px dashed #f1d28a;background:#18110a}.arrangeHead{font-size:22px;font-weight:900;margin-bottom:10px;color:#f1d28a}.arrangeMember{border-bottom:1px solid rgba(143,100,39,.35);padding:8px 0;cursor:grab;display:flex;justify-content:space-between;gap:8px;align-items:center}.arrangeMember:active{cursor:grabbing}.memberMeta{font-size:12px;color:#a58b58}.unassignedBox{min-height:76px;border:1px dashed #8f6427;border-radius:10px;background:#0d0b09;padding:12px;display:flex;gap:8px;flex-wrap:wrap}.chip{display:inline-flex;gap:6px;align-items:center;border:1px solid rgba(143,100,39,.6);border-radius:999px;padding:7px 10px;background:#17120c;cursor:grab}.hrow{display:grid;grid-template-columns:80px 1fr;border-bottom:1px solid rgba(143,100,39,.35);padding:10px 0}.hlabel{font-weight:900;color:#f1d28a}.copyBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.muted{color:#a58b58}.danger{background:#72251f!important;color:white!important}.smallBtn{height:34px;padding:0 10px;width:auto;font-size:14px}
+.sessionGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 16px}.sessionCheck,.sessionTab{border:1px solid #8f6427;border-radius:8px;background:#0d0b09;color:#f1d28a;padding:10px;cursor:pointer;text-align:center;font-weight:900}.sessionCheck{display:flex;align-items:center;gap:8px;text-align:left}.sessionCheck input{width:auto;height:auto}.sessionTab.active{background:linear-gradient(#e7c27d,#9f6423);color:#170d05}.sessionTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 16px}.baiyeBar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}.baiyeCount{font-weight:900;color:#f1d28a}.arrangeBoard{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.arrangeSlot{min-height:180px;border:1px solid #8f6427;border-radius:10px;background:#0d0b09;padding:12px}.arrangeSlot.dragover{outline:3px dashed #f1d28a;background:#18110a}.arrangeHead{font-size:22px;font-weight:900;margin-bottom:10px;color:#f1d28a}.arrangeMember{border-bottom:1px solid rgba(143,100,39,.35);padding:8px 0;cursor:grab;display:flex;justify-content:space-between;gap:8px;align-items:center}.arrangeMember:active{cursor:grabbing}.memberMeta{font-size:12px;color:#a58b58}.unassignedBox{min-height:76px;border:1px dashed #8f6427;border-radius:10px;background:#0d0b09;padding:12px;display:flex;gap:8px;flex-wrap:wrap}.chip{display:inline-flex;gap:6px;align-items:center;border:1px solid rgba(143,100,39,.6);border-radius:999px;padding:7px 10px;background:#17120c;cursor:grab}.hrow{display:grid;grid-template-columns:80px 1fr;border-bottom:1px solid rgba(143,100,39,.35);padding:10px 0}.hlabel{font-weight:900;color:#f1d28a}.copyBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.muted{color:#a58b58}.danger{background:#72251f!important;color:white!important}.smallBtn{height:34px;padding:0 10px;width:auto;font-size:14px}
 @media(max-width:900px){.sessionGrid,.sessionTabs,.arrangeBoard{grid-template-columns:1fr}.baiyeBar,.copyBtns{grid-template-columns:1fr}.baiyeForm{grid-template-columns:1fr!important}}
 
 /* V5_REAL_MEMBER_DB */
@@ -39,7 +39,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,san
 
 <style>
 /* V19 百業戰時間表 */
-.warSchedule{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 16px}
+.warSchedule{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 16px}
 .warScheduleCard{border:1px solid rgba(143,100,39,.55);border-radius:10px;background:#0d0b09;padding:12px}
 .warScheduleTitle{font-size:18px;font-weight:900;color:#ffe29b;margin-bottom:8px}
 .warScheduleLine{line-height:1.7;color:#f1d28a}
@@ -461,7 +461,7 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
           <div><label>可打星期</label><select id="day"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option><option>星期六</option><option>星期日</option></select></div>
           <div><label>可打時間</label><select id="time"><option>21:30</option><option>22:00</option><option>22:30</option><option>23:00</option></select></div>
           <div><label>報名車別</label><select id="xjGroupChoice" onchange="updateXjTalentChoice()"><option value="normal">一般分隊</option><option value="talent">天賦車</option></select></div>
-          <div id="xjTalentChoiceWrap" style="display:none"><label>天賦車選項</label><select id="xjTalentChoice"><option value="">請選擇</option><option value="萬壑化龍吟">萬壑化龍吟</option><option value="風饕五殘災">風饕五殘災</option><option value="點雪斷恩仇">點雪斷恩仇</option><option value="俱俱神浒">俱俱神浒</option><option value="玉魄染青蒼">玉魄染青蒼</option><option value="鯤鵬圖千山">鯤鵬圖千山</option><option value="白裳殁天狼">白裳殁天狼</option><option value="龍驤禦六合">龍驤禦六合</option><option value="風翎掠寒江">風翎掠寒江</option><option value="鬼蜮蘭生花">鬼蜮蘭生花</option><option value="定極分更">定極分更</option><option value="霜催落月">霜催落月</option><option value="篤山銜蟬">篤山銜蟬</option><option value="流火襲星">流火襲星</option></select></div>
+          <div id="xjTalentChoiceWrap" style="display:none"><label>天賦車選項</label><select id="xjTalentChoice"><option value="">請選擇</option><option value="萬壑化龍吟">萬壑化龍吟</option><option value="風饕五殘災">風饕五殘災</option><option value="10人 笑渡苦行舟">10人 笑渡苦行舟</option><option value="5人 白駒飛霞">5人 白駒飛霞</option><option value="10人 點雪斷恩仇">10人 點雪斷恩仇</option><option value="5人 俱俱神浒">5人 俱俱神浒</option><option value="10人 玉魄染青蒼">10人 玉魄染青蒼</option><option value="10人 鯤鵬圖千山">10人 鯤鵬圖千山</option><option value="10人 白裳殁天狼">10人 白裳殁天狼</option><option value="10人 龍驤禦六合">10人 龍驤禦六合</option><option value="10人 風翎掠寒江">10人 風翎掠寒江</option><option value="10人 鬼蜮蘭生花">10人 鬼蜮蘭生花</option><option value="5人 定極分更">5人 定極分更</option><option value="5人 霜催落月">5人 霜催落月</option><option value="5人 篤山銜蟬">5人 篤山銜蟬</option><option value="5人 流火襲星">5人 流火襲星</option></select></div>
       </div><button class="submit" onclick="addPlayer()">確認報名</button>
     </section>
     <section class="card"><div class="title">分隊調整</div><div class="admin"><div><label>通行碼</label><input id="adminPw" type="password" placeholder="請輸入通行碼"></div><button onclick="login()">開啟拖拉</button></div><div class="note">開啟後可拖曳調整隊伍。</div></section>
@@ -561,11 +561,6 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
       <div class="warScheduleTitle">配對一</div>
       <div class="warScheduleLine">開始時間：20:40～21:05</div>
       <div class="warScheduleLine">結束時間：20:50～21:40</div>
-    </div>
-    <div class="warScheduleCard">
-      <div class="warScheduleTitle">配對二</div>
-      <div class="warScheduleLine">開始時間：20:50～21:40</div>
-      <div class="warScheduleLine">結束時間：21:00～22:15</div>
     </div>
   </div>
 </section>
@@ -686,11 +681,6 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
       <div class="warScheduleTitle">配對一</div>
       <div class="warScheduleLine">開始時間：20:40～21:05</div>
       <div class="warScheduleLine">結束時間：20:50～21:40</div>
-    </div>
-    <div class="warScheduleCard">
-      <div class="warScheduleTitle">配對二</div>
-      <div class="warScheduleLine">開始時間：20:50～21:40</div>
-      <div class="warScheduleLine">結束時間：21:00～22:15</div>
     </div>
   </div>
 </section>
