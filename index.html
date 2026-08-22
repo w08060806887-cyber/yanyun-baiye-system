@@ -461,7 +461,7 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
           <div><label>可打星期</label><select id="day"><option>星期一</option><option>星期二</option><option>星期三</option><option>星期四</option><option>星期五</option><option>星期六</option><option>星期日</option></select></div>
           <div><label>可打時間</label><select id="time"><option>21:30</option><option>22:00</option><option>22:30</option><option>23:00</option></select></div>
           <div><label>報名車別</label><select id="xjGroupChoice" onchange="updateXjTalentChoice()"><option value="normal">一般分隊</option><option value="talent">天賦車</option></select></div>
-          <div id="xjTalentChoiceWrap" style="display:none"><label>天賦車選項</label><select id="xjTalentChoice"><option value="">請選擇</option><option value="萬壑化龍吟">萬壑化龍吟</option><option value="風饕五殘災">風饕五殘災</option></select></div>
+          <div id="xjTalentChoiceWrap" style="display:none"><label>天賦車選項</label><select id="xjTalentChoice"><option value="">請選擇</option><option value="萬壑化龍吟">萬壑化龍吟</option><option value="風饕五殘災">風饕五殘災</option><option value="點雪斷恩仇">點雪斷恩仇</option><option value="俱俱神浒">俱俱神浒</option><option value="玉魄染青蒼">玉魄染青蒼</option><option value="鯤鵬圖千山">鯤鵬圖千山</option><option value="白裳殁天狼">白裳殁天狼</option><option value="龍驤禦六合">龍驤禦六合</option><option value="風翎掠寒江">風翎掠寒江</option><option value="鬼蜮蘭生花">鬼蜮蘭生花</option><option value="定極分更">定極分更</option><option value="霜催落月">霜催落月</option><option value="篤山銜蟬">篤山銜蟬</option><option value="流火襲星">流火襲星</option></select></div>
       </div><button class="submit" onclick="addPlayer()">確認報名</button>
     </section>
     <section class="card"><div class="title">分隊調整</div><div class="admin"><div><label>通行碼</label><input id="adminPw" type="password" placeholder="請輸入通行碼"></div><button onclick="login()">開啟拖拉</button></div><div class="note">開啟後可拖曳調整隊伍。</div></section>
@@ -598,7 +598,7 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
 
       <aside class="card">
         <div class="title">百業戰提醒</div>
-        <div class="note">每週六、日各一場定級賽、兩場配對賽。</div>
+        <div class="note">每週六、日各一場定級賽與一場配對賽。</div>
         <div class="note">報名不限制 30 人；報名後會先進入該場次的「未編排人員」。</div>
         <div class="note">請提早 30 分鐘準備。</div>
       </aside>
@@ -837,11 +837,9 @@ function login(){alert('目前不提供此操作。')}function drop(e,g,box){e.p
 const FIREBASE_CONFIG={apiKey:"AIzaSyBXS8YrujgLwgXSKq6QQ6jcFJS6IlP6GMU",authDomain:"yanyun-board.firebaseapp.com",databaseURL:"https://yanyun-board-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"yanyun-board",storageBucket:"yanyun-board.firebasestorage.app",messagingSenderId:"433148882597",appId:"1:433148882597:web:f8692cdcead4c0451da74c",measurementId:"G-SFSQ8HDPCW"};
 const SESSIONS=[
   {id:'sat_rank',label:'週六 定級賽'},
-  {id:'sat_match1',label:'週六 配對賽1'},
-  {id:'sat_match2',label:'週六 配對賽2'},
+  {id:'sat_match1',label:'週六 配對賽'},
   {id:'sun_rank',label:'週日 定級賽'},
-  {id:'sun_match1',label:'週日 配對賽1'},
-  {id:'sun_match2',label:'週日 配對賽2'}
+  {id:'sun_match1',label:'週日 配對賽'}
 ];
 const SLOTS=['A1','A2','A3','B1','B2','B3'];
 const SLOT_POS={A1:'左',A2:'中',A3:'右',B1:'左',B2:'中',B3:'右'};
@@ -1991,7 +1989,7 @@ setTimeout(function(){
         <div><label>每人需求場次</label><input id="monthlyNeed" type="number" value="2" min="0" step="1"></div>
         <button onclick="renderMonthlyV23()">重新計算</button><button onclick="exportMonthlyCsvV24()">匯出月結</button>
       </div>
-      <div class="miniNote">目前先依照 6 個百業戰場次計算；每場報名算 1 次，打三場就是 3 次。</div>
+      <div class="miniNote">目前依照週六/週日定級賽與配對賽共 4 個場次計算；每場報名算 1 次。</div>
     </section>
 
     <section class="card">
@@ -2278,10 +2276,27 @@ async function clearCurrentSessionV25(){
   if(typeof renderBaiyeArrange === 'function') renderBaiyeArrange();
 }
 
+async function clearSessionByIdV42(sessionId){
+  if(!isBaiyeAdminForClearV25()) return alert('目前不提供此操作。');
+  if(typeof warDb === 'undefined' || !warDb) return alert('資料尚未連線，請稍後再試');
+  const label = typeof sessionLabel === 'function' ? sessionLabel(sessionId) : sessionId;
+  if(!confirm('確定清除「'+label+'」全部報名資料？')) return;
+  await warDb.ref('baiyeWarV2/sessions/'+sessionId+'/players').remove();
+  alert('已清除 '+label+' 報名資料');
+  if(typeof renderBaiyeSignup === 'function') renderBaiyeSignup();
+  if(typeof renderBaiyeArrange === 'function') renderBaiyeArrange();
+}
+
+function renderSessionClearButtonsV42(){
+  const el=document.getElementById('clearEachSessionToolsV42');
+  if(!el || typeof SESSIONS==='undefined') return;
+  el.innerHTML=SESSIONS.map(s=>`<button class="danger" style="width:180px" onclick="clearSessionByIdV42('${s.id}')">清除${s.label}</button>`).join('');
+}
+
 async function clearAllSessionsV25(){
   if(!isBaiyeAdminForClearV25()) return alert('目前不提供此操作。');
   if(typeof warDb === 'undefined' || !warDb) return alert('資料尚未連線，請稍後再試');
-  if(!confirm('確定清除所有百業戰場次報名？\\n包含週六/週日定級與配對全部資料。')) return;
+  if(!confirm('確定清除所有百業戰場次報名？\\n包含週六/週日定級賽與配對賽全部資料。')) return;
   if(!confirm('再次確認：這會清空全部報名與編排，確定嗎？')) return;
   await warDb.ref('baiyeWarV2/sessions').remove();
   alert('已清除全部百業戰報名');
@@ -2300,16 +2315,19 @@ function insertClearButtonsV25(){
       <button class="danger" style="width:180px" onclick="clearCurrentSessionV25()">清除目前場次報名</button>
       <button class="danger" style="width:180px" onclick="clearAllSessionsV25()">清除全部報名</button>
     </div>
+    <div class="miniNote adminOnlyV20" style="margin-top:10px">單場清除報名資料</div>
+    <div id="clearEachSessionToolsV42" class="adminOnlyV20" style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap"></div>
   `);
+  renderSessionClearButtonsV42();
 }
 
 const _showPageV25 = window.showPage;
 window.showPage = function(id){
   if(typeof _showPageV25 === 'function') _showPageV25(id);
-  setTimeout(insertClearButtonsV25,100);
+  setTimeout(insertClearButtonsV25,100);setTimeout(renderSessionClearButtonsV42,130);
 };
 
-setTimeout(insertClearButtonsV25,800);
+setTimeout(insertClearButtonsV25,800);setTimeout(renderSessionClearButtonsV42,850);
 </script>
 
 
