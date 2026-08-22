@@ -404,6 +404,11 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
 .home-nav-members{left:72.85%!important;top:3.91%!important;width:7.03%!important;height:1.82%!important}
 .home-nav-monthly{left:80.86%!important;top:3.91%!important;width:7.03%!important;height:1.82%!important}
 .home-nav-command{left:88.48%!important;top:3.12%!important;width:10.94%!important;height:2.86%!important}
+.home-nav-main,.home-nav-war,.home-nav-xj,.home-nav-zhongzhi,.home-nav-members,.home-nav-monthly,.home-nav-command{display:none!important}
+.homeTopNav{position:absolute;left:29.6%;top:3.1%;width:58.4%;height:3.9%;z-index:6;display:grid;grid-template-columns:.72fr 1.34fr 1.05fr 1.12fr 1.05fr .96fr;gap:1.4%;align-items:center}
+.homeTopNav button,.homeCommandBtn{display:block!important;width:100%!important;height:100%!important;min-height:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:transparent!important;text-shadow:none!important;outline:none!important;filter:none!important;transform:none!important;cursor:pointer}
+.homeTopNav button:hover,.homeTopNav button:focus-visible,.homeCommandBtn:hover,.homeCommandBtn:focus-visible{background:rgba(255,221,139,.05)!important;box-shadow:none!important;outline:1px solid rgba(255,221,139,.18)!important}
+.homeCommandBtn{position:absolute;left:88.45%;top:2.95%;width:10.95%!important;height:3.4%!important;z-index:7}
 #xjPage .del,#xjPage .xjAdminOnly{display:none!important}
 .adminOn #xjPage .del,.adminOn #xjPage .xjAdminOnly{display:inline-flex!important;align-items:center;justify-content:center}
 #xjPage .del{width:auto!important;min-width:58px!important;height:30px!important;border-radius:6px!important;padding:0 10px!important;margin-left:6px!important;font-size:13px!important}
@@ -433,6 +438,15 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
 </head><body><section id="homePage" class="page stage active">
   <div class="board homeBoard">
     <img class="bg" src="assets/wangshi-home.png" alt="望獅閣 GVG 百業首頁">
+    <div class="homeTopNav" aria-label="首頁上方導覽">
+      <button type="button" onclick="showPage('homePage')" aria-label="首頁">首頁</button>
+      <button type="button" onclick="showPage('baiyePage')" aria-label="百業戰報名">百業戰報名</button>
+      <button type="button" onclick="showPage('xjPage')" aria-label="百業俠境">百業俠境</button>
+      <button type="button" onclick="showPage('zhongzhiPage')" aria-label="眾志凌霄">眾志凌霄</button>
+      <button type="button" onclick="showPage('baiyeMembersPage')" aria-label="成員資料">成員資料</button>
+      <button type="button" onclick="showPage('monthlyPage')" aria-label="月結積分">月結積分</button>
+    </div>
+    <button type="button" class="homeCommandBtn" onclick="showPage('baiyeArrangePage')" aria-label="指揮後台">指揮後台</button>
     <a class="hotspot home-nav-main" onclick="showPage('homePage')" aria-label="首頁"></a>
     <a class="hotspot home-nav-war" onclick="showPage('baiyePage')" aria-label="百業戰報名"></a>
     <a class="hotspot home-nav-xj" onclick="showPage('xjPage')" aria-label="百業俠境"></a>
