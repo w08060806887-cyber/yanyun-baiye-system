@@ -9,7 +9,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei",Arial,san
 .arrangeToolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}.arrangeGrid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid #8f6427;background:#0d0b09}.arrangeSlot{min-height:145px;border-right:1px solid rgba(143,100,39,.55);border-bottom:1px solid rgba(143,100,39,.55)}.arrangeSlot:nth-child(3),.arrangeSlot:nth-child(6){border-right:none}.arrangeSlot:nth-child(n+4){border-bottom:none}.arrangeHead{background:#2a1e10;color:#ffe29b;font-weight:900;text-align:center;padding:8px;border-bottom:1px solid rgba(143,100,39,.55)}.arrangeBody{padding:8px}.arrangeMember{display:flex;justify-content:space-between;gap:6px;align-items:center;border-bottom:1px solid rgba(143,100,39,.22);padding:6px 2px;line-height:1.5}.horizontalRows{border:1px solid #8f6427;background:#0d0b09}.hrow{display:grid;grid-template-columns:80px 1fr;border-bottom:1px solid rgba(143,100,39,.35);min-height:42px}.hrow:last-child{border-bottom:none}.hlabel{background:#2a1e10;color:#ffe29b;font-weight:900;display:flex;align-items:center;justify-content:center}.hcontent{padding:9px;line-height:1.8}.unassigned{display:flex;gap:8px;flex-wrap:wrap}.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(143,100,39,.7);border-radius:6px;padding:6px 9px;background:#17120c}.assignTable{width:100%;border-collapse:collapse}.assignTable th,.assignTable td{border-bottom:1px solid rgba(143,100,39,.25);padding:8px;text-align:left}.assignTable select{height:36px}.copyBox{width:100%;min-height:120px;margin-top:10px;line-height:1.7}@media(max-width:900px){.arrangeGrid{grid-template-columns:1fr}.arrangeSlot,.arrangeSlot:nth-child(3),.arrangeSlot:nth-child(6),.arrangeSlot:nth-child(n+4){border-right:none;border-bottom:1px solid rgba(143,100,39,.55)}.hrow{grid-template-columns:64px 1fr}}
 
 /* 百業戰 V2：保留原本黑金皮膚，只新增場次與拖曳編排 */
-.sessionGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 16px}.sessionCheck,.sessionTab{border:1px solid #8f6427;border-radius:8px;background:#0d0b09;color:#f1d28a;padding:10px;cursor:pointer;text-align:center;font-weight:900}.sessionCheck{display:flex;align-items:center;gap:8px;text-align:left}.sessionCheck input{width:auto;height:auto}.sessionTab.active{background:linear-gradient(#e7c27d,#9f6423);color:#170d05}.sessionTabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 16px}.baiyeBar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}.baiyeCount{font-weight:900;color:#f1d28a}.arrangeBoard{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.arrangeSlot{min-height:180px;border:1px solid #8f6427;border-radius:10px;background:#0d0b09;padding:12px}.arrangeSlot.dragover{outline:3px dashed #f1d28a;background:#18110a}.arrangeHead{font-size:22px;font-weight:900;margin-bottom:10px;color:#f1d28a}.arrangeMember{border-bottom:1px solid rgba(143,100,39,.35);padding:8px 0;cursor:grab;display:flex;justify-content:space-between;gap:8px;align-items:center}.arrangeMember:active{cursor:grabbing}.memberMeta{font-size:12px;color:#a58b58}.unassignedBox{min-height:76px;border:1px dashed #8f6427;border-radius:10px;background:#0d0b09;padding:12px;display:flex;gap:8px;flex-wrap:wrap}.chip{display:inline-flex;gap:6px;align-items:center;border:1px solid rgba(143,100,39,.6);border-radius:999px;padding:7px 10px;background:#17120c;cursor:grab}.hrow{display:grid;grid-template-columns:80px 1fr;border-bottom:1px solid rgba(143,100,39,.35);padding:10px 0}.hlabel{font-weight:900;color:#f1d28a}.copyBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.muted{color:#a58b58}.danger{background:#72251f!important;color:white!important}.smallBtn{height:34px;padding:0 10px;width:auto;font-size:14px}
+.sessionGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 16px}.sessionCheck,.sessionTab{border:1px solid #8f6427;border-radius:8px;background:#0d0b09;color:#f1d28a;padding:10px;cursor:pointer;text-align:center;font-weight:900}.sessionCheck{display:flex;align-items:center;gap:8px;text-align:left}.sessionCheck input{width:auto;height:auto}.sessionTab.active{background:linear-gradient(#e7c27d,#9f6423);color:#170d05}.sessionTabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0 16px}.baiyeBar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}.baiyeCount{font-weight:900;color:#f1d28a}.arrangeBoard{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.arrangeSlot{min-height:180px;border:1px solid #8f6427;border-radius:10px;background:#0d0b09;padding:12px}.arrangeSlot.dragover{outline:3px dashed #f1d28a;background:#18110a}.arrangeHead{font-size:22px;font-weight:900;margin-bottom:10px;color:#f1d28a}.arrangeMember{border-bottom:1px solid rgba(143,100,39,.35);padding:8px 0;cursor:grab;display:flex;justify-content:space-between;gap:8px;align-items:center}.arrangeMember:active{cursor:grabbing}.memberMeta{font-size:12px;color:#a58b58}.unassignedBox{min-height:76px;border:1px dashed #8f6427;border-radius:10px;background:#0d0b09;padding:12px;display:flex;gap:8px;flex-wrap:wrap}.chip{display:inline-flex;gap:6px;align-items:center;border:1px solid rgba(143,100,39,.6);border-radius:999px;padding:7px 10px;background:#17120c;cursor:grab}.hrow{display:grid;grid-template-columns:80px 1fr;border-bottom:1px solid rgba(143,100,39,.35);padding:10px 0}.hlabel{font-weight:900;color:#f1d28a}.copyBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}.muted{color:#a58b58}.danger{background:#72251f!important;color:white!important}.smallBtn{height:34px;padding:0 10px;width:auto;font-size:14px}
 @media(max-width:900px){.sessionGrid,.sessionTabs,.arrangeBoard{grid-template-columns:1fr}.baiyeBar,.copyBtns{grid-template-columns:1fr}.baiyeForm{grid-template-columns:1fr!important}}
 
 /* V5_REAL_MEMBER_DB */
@@ -667,6 +667,17 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
         <div><label>目前查看密碼</label><input id="arrangeViewPasswordInput" placeholder="輸入新的查看密碼"></div>
         <button onclick="saveArrangeViewPassword()">更新密碼</button>
       </div>
+    </section>
+
+    <section class="card arrangeProtected" id="baiyeClearSignupCardV43">
+      <div class="title">清除報名資料</div>
+      <div class="note">可單獨清除每一場報名資料，或清除目前場次 / 全部場次。</div>
+      <div id="clearSignupToolsV25" class="adminOnlyV20" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="danger" style="width:180px" onclick="clearCurrentSessionV25()">清除目前場次報名</button>
+        <button class="danger" style="width:180px" onclick="clearAllSessionsV25()">清除全部報名</button>
+      </div>
+      <div class="miniNote adminOnlyV20" style="margin-top:10px">單場清除報名資料</div>
+      <div id="clearEachSessionToolsV42" class="adminOnlyV20" style="margin-top:8px;display:grid;grid-template-columns:repeat(2,minmax(0,180px));gap:10px"></div>
     </section>
 
 <section class="card warScheduleSection arrangeProtected">
@@ -2295,19 +2306,6 @@ async function clearAllSessionsV25(){
 }
 
 function insertClearButtonsV25(){
-  if(document.getElementById('clearSignupToolsV25')) return;
-  const arrange=document.getElementById('baiyeArrangePage');
-  if(!arrange) return;
-  const firstCard=arrange.querySelector('.card');
-  if(!firstCard) return;
-  firstCard.insertAdjacentHTML('beforeend', `
-    <div id="clearSignupToolsV25" class="adminOnlyV20" style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
-      <button class="danger" style="width:180px" onclick="clearCurrentSessionV25()">清除目前場次報名</button>
-      <button class="danger" style="width:180px" onclick="clearAllSessionsV25()">清除全部報名</button>
-    </div>
-    <div class="miniNote adminOnlyV20" style="margin-top:10px">單場清除報名資料</div>
-    <div id="clearEachSessionToolsV42" class="adminOnlyV20" style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap"></div>
-  `);
   renderSessionClearButtonsV42();
 }
 
