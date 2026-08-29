@@ -576,6 +576,11 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
       <div class="warScheduleLine">開始時間：20:40～21:05</div>
       <div class="warScheduleLine">結束時間：20:50～21:40</div>
     </div>
+    <div class="warScheduleCard">
+      <div class="warScheduleTitle">配對二</div>
+      <div class="warScheduleLine">開始時間：20:50～21:40</div>
+      <div class="warScheduleLine">結束時間：21:00～22:15</div>
+    </div>
   </div>
 </section>
 
@@ -607,7 +612,7 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
 
       <aside class="card">
         <div class="title">百業戰提醒</div>
-        <div class="note">每週六、日各一場定級賽與一場配對賽。</div>
+        <div class="note">每週六、日各一場定級賽與兩場配對賽。</div>
         <div class="note">報名不限制 30 人；報名後會先進入該場次的「未編排人員」。</div>
         <div class="note">請提早 30 分鐘準備。</div>
       </aside>
@@ -706,6 +711,11 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
       <div class="warScheduleTitle">配對一</div>
       <div class="warScheduleLine">開始時間：20:40～21:05</div>
       <div class="warScheduleLine">結束時間：20:50～21:40</div>
+    </div>
+    <div class="warScheduleCard">
+      <div class="warScheduleTitle">配對二</div>
+      <div class="warScheduleLine">開始時間：20:50～21:40</div>
+      <div class="warScheduleLine">結束時間：21:00～22:15</div>
     </div>
   </div>
 </section>
@@ -852,9 +862,11 @@ function login(){alert('目前不提供此操作。')}function drop(e,g,box){e.p
 const FIREBASE_CONFIG={apiKey:"AIzaSyBXS8YrujgLwgXSKq6QQ6jcFJS6IlP6GMU",authDomain:"yanyun-board.firebaseapp.com",databaseURL:"https://yanyun-board-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"yanyun-board",storageBucket:"yanyun-board.firebasestorage.app",messagingSenderId:"433148882597",appId:"1:433148882597:web:f8692cdcead4c0451da74c",measurementId:"G-SFSQ8HDPCW"};
 const SESSIONS=[
   {id:'sat_rank',label:'週六 定級賽'},
-  {id:'sat_match1',label:'週六 配對賽'},
+  {id:'sat_match1',label:'週六 配對賽1'},
+  {id:'sat_match2',label:'週六 配對賽2'},
   {id:'sun_rank',label:'週日 定級賽'},
-  {id:'sun_match1',label:'週日 配對賽'}
+  {id:'sun_match1',label:'週日 配對賽1'},
+  {id:'sun_match2',label:'週日 配對賽2'}
 ];
 const SLOTS=['A1','A2','A3','B1','B2','B3'];
 const SLOT_POS={A1:'左',A2:'中',A3:'右',B1:'左',B2:'中',B3:'右'};
@@ -2004,7 +2016,7 @@ setTimeout(function(){
         <div><label>每人需求場次</label><input id="monthlyNeed" type="number" value="2" min="0" step="1"></div>
         <button onclick="renderMonthlyV23()">重新計算</button><button onclick="exportMonthlyCsvV24()">匯出月結</button>
       </div>
-      <div class="miniNote">目前依照週六/週日定級賽與配對賽共 4 個場次計算；每場報名算 1 次。</div>
+      <div class="miniNote">目前依照週六/週日定級賽與配對賽共 6 個場次計算；每場報名算 1 次。</div>
     </section>
 
     <section class="card">
@@ -2311,7 +2323,7 @@ function renderSessionClearButtonsV42(){
 async function clearAllSessionsV25(){
   if(!isBaiyeAdminForClearV25()) return alert('目前不提供此操作。');
   if(typeof warDb === 'undefined' || !warDb) return alert('資料尚未連線，請稍後再試');
-  if(!confirm('確定清除所有百業戰場次報名？\\n包含週六/週日定級賽與配對賽全部資料。')) return;
+  if(!confirm('確定清除所有百業戰場次報名？\\n包含週六/週日定級賽與配對一、配對二全部資料。')) return;
   if(!confirm('再次確認：這會清空全部報名與編排，確定嗎？')) return;
   await warDb.ref('baiyeWarV2/sessions').remove();
   alert('已清除全部百業戰報名');
