@@ -3543,4 +3543,54 @@ try{renderBaiyeArrange=window.renderBaiyeArrange;}catch(e){}
 })();
 </script>
 
+<style>
+/* V46 依使用者提供的聯賽表配色套用流派顏色 */
+.tag.role-orange,.warRoleSelect.role-orange{background:#FFA766!important;color:#101010!important;border-color:#d78343!important}
+.tag.role-blue,.warRoleSelect.role-blue{background:#8DB5F8!important;color:#10264f!important;border-color:#6d94d4!important}
+.tag.role-green,.warRoleSelect.role-green{background:#7AD592!important;color:#123d20!important;border-color:#58af70!important}
+.tag.role-purple,.warRoleSelect.role-purple{background:#CC99FF!important;color:#3f1768!important;border-color:#a875dd!important}
+.tag.role-gray,.warRoleSelect.role-gray{background:#CDD8E1!important;color:#23313b!important;border-color:#aab9c4!important}
+</style>
+<script>
+/* V46_ROLE_COLORS_FROM_REFERENCE */
+(function(){
+  const roleColorMapV46={
+    '八奶':'role-orange','八方奶':'role-orange','威威':'role-orange','鈞鈞':'role-orange','陌奶':'role-orange','唐陌':'role-orange','陌霖':'role-orange',
+    '虹虹':'role-blue','影影':'role-blue','雙劍':'role-blue',
+    '霖霖':'role-green','雙扇':'role-green','玉玉':'role-green',
+    '風風':'role-purple','塵塵':'role-purple','鷹鷹':'role-purple','樽樽':'role-purple',
+    '可切換':'role-gray'
+  };
+  const oldClsV46=window.cls;
+  window.cls=function(role){
+    const r=String(role||'').trim();
+    return roleColorMapV46[r] || (typeof oldClsV46==='function'?oldClsV46(r):'role-blue');
+  };
+  try{cls=window.cls;}catch(e){}
+
+  function paintSelectV46(sel){
+    if(!sel)return;
+    [...sel.classList].filter(c=>c.startsWith('role-')).forEach(c=>sel.classList.remove(c));
+    sel.classList.add(window.cls(sel.value));
+  }
+  document.addEventListener('change',function(e){
+    if(e.target&&e.target.classList&&e.target.classList.contains('warRoleSelect'))paintSelectV46(e.target);
+  });
+  const oldRender=window.renderBaiyeArrange;
+  if(typeof oldRender==='function'){
+    window.renderBaiyeArrange=function(){
+      const r=oldRender.apply(this,arguments);
+      setTimeout(()=>document.querySelectorAll('.warRoleSelect').forEach(paintSelectV46),0);
+      return r;
+    };
+    try{renderBaiyeArrange=window.renderBaiyeArrange;}catch(e){}
+  }
+  setTimeout(()=>{
+    document.querySelectorAll('.warRoleSelect').forEach(paintSelectV46);
+    try{if(typeof renderMembersV5==='function')renderMembersV5();}catch(e){}
+    try{if(typeof renderBaiyeArrange==='function')renderBaiyeArrange();}catch(e){}
+  },1400);
+})();
+</script>
+
 </body></html>
