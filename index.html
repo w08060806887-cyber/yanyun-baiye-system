@@ -3724,4 +3724,72 @@ try{renderBaiyeArrange=window.renderBaiyeArrange;}catch(e){}
 })();
 </script>
 
+
+<script>
+/* V49_FIX_ROLE_OPTION_COLORS
+   修正 V48 把 class 名稱從 role-orange 誤改成 orange，
+   導致流派下拉選項/標籤失去原本四色背景。
+*/
+(function(){
+  const ROLE_CLASS_V49 = {
+    // 橘色（坦）
+    '八奶':'role-orange','八方奶':'role-orange','威威':'role-orange','鈞鈞':'role-orange',
+    '陌奶':'role-orange','唐陌':'role-orange','陌霖':'role-orange','霖八':'role-orange','雙陌':'role-orange',
+
+    // 綠色（奶媽）
+    '霖霖':'role-green','雙扇':'role-green','玉玉':'role-green',
+
+    // 藍色
+    '虹虹':'role-blue','影影':'role-blue','雙劍':'role-blue','釣釣':'role-blue',
+
+    // 紫色
+    '風風':'role-purple','塵塵':'role-purple','鷹鷹':'role-purple','樽樽':'role-purple'
+  };
+
+  const fallbackClsV49 = window.cls;
+
+  window.cls = function(role){
+    const r=String(role||'').trim();
+    if(ROLE_CLASS_V49[r]) return ROLE_CLASS_V49[r];
+    const old = typeof fallbackClsV49==='function' ? fallbackClsV49(r) : '';
+    if(/^role-(orange|blue|green|purple)$/.test(old)) return old;
+    return 'role-blue';
+  };
+  try{ cls = window.cls; }catch(e){}
+
+  function paintRoleSelectV49(sel){
+    if(!sel) return;
+    ['role-orange','role-blue','role-green','role-purple','role-gray','orange','blue','green','purple','gray']
+      .forEach(c=>sel.classList.remove(c));
+    sel.classList.add(window.cls(sel.value));
+  }
+
+  function repaintAllV49(){
+    document.querySelectorAll('.warRoleSelect').forEach(paintRoleSelectV49);
+  }
+
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.classList && e.target.classList.contains('warRoleSelect')){
+      paintRoleSelectV49(e.target);
+    }
+  });
+
+  const oldRenderV49 = window.renderBaiyeArrange;
+  if(typeof oldRenderV49==='function'){
+    window.renderBaiyeArrange = function(){
+      const r = oldRenderV49.apply(this, arguments);
+      setTimeout(repaintAllV49, 0);
+      return r;
+    };
+    try{ renderBaiyeArrange = window.renderBaiyeArrange; }catch(e){}
+  }
+
+  setTimeout(function(){
+    repaintAllV49();
+    try{ if(typeof renderMembersV5==='function') renderMembersV5(); }catch(e){}
+    try{ if(typeof renderBaiyeArrange==='function') renderBaiyeArrange(); }catch(e){}
+  }, 900);
+})();
+</script>
+
 </body></html>
