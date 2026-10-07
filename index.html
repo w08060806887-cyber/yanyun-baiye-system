@@ -3792,4 +3792,43 @@ try{renderBaiyeArrange=window.renderBaiyeArrange;}catch(e){}
 })();
 </script>
 
+
+<style>
+/* V50 強制流派下拉框四色顯示，避免個別 select 被舊樣式覆蓋 */
+.warRoleSelect.role-orange{background:#ffa45f!important;color:#2a1400!important;border-color:#d87a28!important}
+.warRoleSelect.role-green{background:#78d48f!important;color:#083b19!important;border-color:#4caf68!important}
+.warRoleSelect.role-blue{background:#82aef0!important;color:#102b50!important;border-color:#5e8fd7!important}
+.warRoleSelect.role-purple{background:#c08df0!important;color:#32134d!important;border-color:#9b68ce!important}
+</style>
+<script>
+/* V50_FORCE_REPAINT_ROLE_SELECT */
+(function(){
+  const ROLE_CLASS_V50 = {
+    '八奶':'role-orange','八方奶':'role-orange','威威':'role-orange','鈞鈞':'role-orange',
+    '陌奶':'role-orange','唐陌':'role-orange','陌霖':'role-orange','霖八':'role-orange','雙陌':'role-orange',
+    '霖霖':'role-green','雙扇':'role-green','玉玉':'role-green',
+    '虹虹':'role-blue','影影':'role-blue','雙劍':'role-blue','釣釣':'role-blue',
+    '風風':'role-purple','塵塵':'role-purple','鷹鷹':'role-purple','樽樽':'role-purple'
+  };
+
+  function forcePaintV50(){
+    document.querySelectorAll('.warRoleSelect').forEach(sel=>{
+      sel.classList.remove('role-orange','role-green','role-blue','role-purple','role-gray','orange','green','blue','purple','gray');
+      const c=ROLE_CLASS_V50[String(sel.value||'').trim()];
+      if(c) sel.classList.add(c);
+    });
+  }
+
+  document.addEventListener('change',e=>{
+    if(e.target?.classList?.contains('warRoleSelect')) forcePaintV50();
+  });
+
+  const obs=new MutationObserver(()=>forcePaintV50());
+  obs.observe(document.body,{childList:true,subtree:true});
+
+  setTimeout(forcePaintV50,300);
+  setTimeout(forcePaintV50,1000);
+})();
+</script>
+
 </body></html>
