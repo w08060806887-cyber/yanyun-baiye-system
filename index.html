@@ -435,6 +435,16 @@ button:active,.submit:active,.smallBtn:active,.sessionTab:active{
 }
 </style>
 
+
+<style>
+.tag.orange,
+.roleCount .tag.orange{
+  background:linear-gradient(180deg,#d99032,#9d5715)!important;
+  color:#fff7e8!important;
+  border-color:rgba(255,207,135,.55)!important;
+}
+</style>
+
 </head><body><section id="homePage" class="page stage active">
   <div class="board homeBoard">
     <img class="bg" src="assets/wangshi-home.png" alt="望獅閣 GVG 百業首頁">
@@ -3590,6 +3600,127 @@ try{renderBaiyeArrange=window.renderBaiyeArrange;}catch(e){}
     try{if(typeof renderMembersV5==='function')renderMembersV5();}catch(e){}
     try{if(typeof renderBaiyeArrange==='function')renderBaiyeArrange();}catch(e){}
   },1400);
+})();
+</script>
+
+
+<script>
+/* V47_TEAM_ROLE_ORDER
+   每個小隊內排序：
+   1. 橘色（坦）優先放最前面
+   2. 其他流派放中間
+   3. 綠色（奶媽）放最後面
+   同類型之間保留原本報名 / 編排先後順序。
+*/
+(function(){
+  const TANK_ROLES_V47 = new Set(['八奶','八方奶','威威','鈞鈞','陌奶','唐陌','陌霖']);
+  const HEALER_ROLES_V47 = new Set(['霖霖','雙扇','玉玉']);
+
+  function roleOrderV47(role){
+    const r=String(role||'').trim();
+    if(TANK_ROLES_V47.has(r)) return 0;
+    if(HEALER_ROLES_V47.has(r)) return 2;
+    return 1;
+  }
+
+  function sortTeamMembersV47(list){
+    return [...(list||[])].sort((a,b)=>{
+      const pa=roleOrderV47(a?.school);
+      const pb=roleOrderV47(b?.school);
+      if(pa!==pb) return pa-pb;
+      return (Number(a?.createdAt)||0)-(Number(b?.createdAt)||0);
+    });
+  }
+
+  window.sortTeamMembersV47 = sortTeamMembersV47;
+
+  /* 直接包住目前最終版 getSessionPlayers，
+     讓後台直式、橫式、唯讀查看、複製名單全部使用同一排序。 */
+  const oldGetSessionPlayersV47 = window.getSessionPlayers || (typeof getSessionPlayers==='function' ? getSessionPlayers : null);
+  if(typeof oldGetSessionPlayersV47 === 'function'){
+    window.getSessionPlayers = function(sessionId){
+      return sortTeamMembersV47(oldGetSessionPlayersV47(sessionId));
+    };
+    try{ getSessionPlayers = window.getSessionPlayers; }catch(e){}
+  }
+
+  setTimeout(function(){
+    try{ if(typeof renderBaiyeArrange==='function') renderBaiyeArrange(); }catch(e){}
+    try{
+      if(document.getElementById('baiyeArrangeViewPage')?.classList.contains('active') &&
+         typeof renderBaiyeArrangeView==='function') renderBaiyeArrangeView();
+    }catch(e){}
+  }, 1500);
+})();
+</script>
+
+
+<script>
+/* V48_FINAL_ROLE_COLOR_CLASSIFICATION
+   最終四色分類：
+   橘色=坦、綠色=奶、藍色=輸出一、紫色=輸出二
+   移除灰色「可切換」概念。
+*/
+(function(){
+  const ROLE_COLOR_V48 = {
+    // 橘色（坦）
+    '八奶':'orange','八方奶':'orange','威威':'orange','鈞鈞':'orange',
+    '陌奶':'orange','唐陌':'orange','陌霖':'orange','霖八':'orange','雙陌':'orange',
+
+    // 綠色（奶媽）
+    '霖霖':'green','雙扇':'green','玉玉':'green',
+
+    // 藍色
+    '虹虹':'blue','影影':'blue','雙劍':'blue','釣釣':'blue',
+
+    // 紫色
+    '風風':'purple','塵塵':'purple','鷹鷹':'purple','樽樽':'purple'
+  };
+
+  const oldClsV48 = window.cls;
+  window.cls = function(role){
+    const r=String(role||'').trim();
+    if(ROLE_COLOR_V48[r]) return ROLE_COLOR_V48[r];
+    return oldClsV48 ? oldClsV48(r) : 'blue';
+  };
+
+  // 排序同步：橘色坦前、綠色奶後
+  window.sortTeamMembersV47 = function(list){
+    function order(role){
+      const c=ROLE_COLOR_V48[String(role||'').trim()];
+      if(c==='orange') return 0;
+      if(c==='green') return 2;
+      return 1;
+    }
+    return [...(list||[])].sort((a,b)=>{
+      const pa=order(a?.school), pb=order(b?.school);
+      if(pa!==pb) return pa-pb;
+      return (Number(a?.createdAt)||0)-(Number(b?.createdAt)||0);
+    });
+  };
+
+  // 移除「可切換」選項，保留其他流派
+  function removeSwitchableV48(){
+    document.querySelectorAll('#memberRoleChecks input[value="可切換"]').forEach(input=>{
+      const label=input.closest('label');
+      if(label) label.remove();
+      else input.remove();
+    });
+    const hidden=document.getElementById('memberRole');
+    if(hidden && hidden.tagName==='SELECT'){
+      [...hidden.options].filter(o=>o.value==='可切換').forEach(o=>o.remove());
+    }
+  }
+
+  removeSwitchableV48();
+
+  // 重新渲染
+  setTimeout(function(){
+    removeSwitchableV48();
+    try{ if(typeof renderMembersV5==='function') renderMembersV5(); }catch(e){}
+    try{ if(typeof renderBaiyeArrange==='function') renderBaiyeArrange(); }catch(e){}
+    try{ if(typeof renderBaiyeSignup==='function') renderBaiyeSignup(); }catch(e){}
+  }, 1200);
 })();
 </script>
 
