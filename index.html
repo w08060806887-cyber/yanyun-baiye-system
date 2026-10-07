@@ -3445,4 +3445,102 @@ try{renderBaiyeArrange=window.renderBaiyeArrange;}catch(e){}
 })();
 </script>
 
+
+<style>
+/* V45 百業戰編排：每位成員可直接切換本場流派 */
+.warRoleRow{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+.warRoleSelect{width:auto!important;min-width:86px!important;max-width:118px!important;height:34px!important;min-height:34px!important;padding:0 28px 0 8px!important;font-size:14px!important;font-weight:900!important;border-radius:5px!important}
+.warRoleName{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.arrangeMember .memberMeta{margin-left:auto;white-space:nowrap}
+@media(max-width:520px){.warRoleSelect{min-width:82px!important;max-width:102px!important}.warRoleRow{gap:6px}.warRoleName{font-size:14px}}
+</style>
+<script>
+/* V45_SWITCH_ROLE_IN_ARRANGE
+   成員資料 role = 可使用流派清單；百業戰 player.school = 該場目前使用流派。
+   在指揮後台切換只更新該場次，不會改掉成員資料庫的流派清單。
+*/
+(function(){
+  function escV45(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function splitRolesV45(v){return String(v||'').split(/[、,，/／\s]+/).map(x=>x.trim()).filter(Boolean);}
+  function getMemberRolesV45(name,current){
+    let roles=[];
+    try{
+      const m=(typeof getMembersV5==='function'?getMembersV5():[]).find(x=>String(x.name||'').trim()===String(name||'').trim());
+      if(m)roles=splitRolesV45(m.role);
+    }catch(e){}
+    if(current && !roles.includes(current))roles.unshift(current);
+    if(!roles.length){
+      try{roles=[...(window.ROLE_LIST_V16||window.ROLE_LIST_V15||[])];}catch(e){}
+    }
+    return [...new Set(roles.filter(Boolean))];
+  }
+  function dbV45(){
+    try{if(window.warDb&&window.warDb.ref)return window.warDb;}catch(e){}
+    try{if(typeof warDb!=='undefined'&&warDb&&warDb.ref)return warDb;}catch(e){}
+    try{if(typeof firebase!=='undefined')return firebase.database();}catch(e){}
+    return null;
+  }
+  window.changeWarSchoolV45=async function(playerId,newSchool){
+    if(typeof isBaiyeAdminV20==='function' && !isBaiyeAdminV20())return alert('目前不提供此操作。');
+    const school=String(newSchool||'').trim();
+    if(!school)return;
+    const db=dbV45();
+    if(!db)return alert('資料尚未連線，請重新整理');
+    try{
+      await db.ref(`baiyeWarV2/sessions/${currentSession}/players/${playerId}/school`).set(school);
+    }catch(e){console.error(e);alert('流派更新失敗，請再試一次');}
+  };
+  function rolePickerV45(p,editable){
+    const current=String(p?.school||'').trim();
+    const roles=getMemberRolesV45(p?.name,current);
+    if(!editable){
+      const c=(typeof cls==='function'?cls(current):'');
+      return `<span class="tag ${c}">${escV45(current||'-')}</span>`;
+    }
+    const options=roles.map(r=>`<option value="${escV45(r)}" ${r===current?'selected':''}>${escV45(r)}</option>`).join('');
+    return `<select class="warRoleSelect" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()" onchange="event.stopPropagation();changeWarSchoolV45('${escV45(p.id)}',this.value)">${options}</select>`;
+  }
+  function memberRowV45(p,editable,standby){
+    const power=p?.power?Number(p.power||0).toLocaleString():'';
+    return `<span class="warRoleRow">${rolePickerV45(p,editable)}<span class="warRoleName">${escV45(p?.name||'')}${standby?' <span style="color:#ff9a7a">（候補）</span>':''}</span></span><span class="memberMeta">${escV45(power)}</span>`;
+  }
+  function roleStatsV45(members){
+    const counts={};(members||[]).forEach(p=>{const r=String(p.school||'').trim();if(r)counts[r]=(counts[r]||0)+1;});
+    const es=Object.entries(counts).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'zh-Hant'));
+    if(!es.length)return '<div class="roleStatsBox"><div class="roleStatsTitle">流派配置</div><span class="muted">尚無</span></div>';
+    return `<div class="roleStatsBox"><div class="roleStatsTitle">流派配置</div><div class="roleStatsTags">${es.map(([r,c])=>`<span class="roleCount"><span class="tag ${typeof cls==='function'?cls(r):''}">${escV45(r)}</span>${c}</span>`).join('')}</div></div>`;
+  }
+  const previousRender=window.renderBaiyeArrange;
+  window.renderBaiyeArrange=function(){
+    if(typeof renderSessionTabs==='function')renderSessionTabs();
+    const list=typeof getSessionPlayers==='function'?getSessionPlayers(currentSession):[];
+    const max=typeof WAR_MAX!=='undefined'?WAR_MAX:30;
+    const assignedCount=list.filter(p=>p.slot).length;
+    const standbyActive=assignedCount>=max;
+    const unassigned=list.filter(p=>!p.slot);
+    const standbyList=standbyActive?unassigned:[];
+    const count=document.getElementById('currentSessionCount');
+    if(count)count.textContent=standbyActive?`${sessionLabel(currentSession)}　已編排:${assignedCount}/${max}　候補:${standbyList.length}`:`${sessionLabel(currentSession)}　報名:${list.length} 人　已編排:${assignedCount}/${max}`;
+    const can=(typeof isBaiyeAdminV20==='function')?isBaiyeAdminV20():true;
+    const dragAttr=can?'draggable="true"':'';
+    const delBtn=p=>can?`<button class="smallBtn danger" onclick="event.stopPropagation();removeWarPlayer('${p.id}')">刪</button>`:'';
+    const un=document.getElementById('unassignedArrange');
+    if(un){
+      if(standbyActive)un.innerHTML='<span class="muted">已編排滿 30 人，剩餘報名者已列入候補名單。</span>';
+      else un.innerHTML=unassigned.map(p=>`<span class="chip" ${dragAttr} ondragstart="dragWar('${p.id}')">${memberRowV45(p,can,false)}${delBtn(p)}</span>`).join('')||'<span class="muted">目前沒有未編排人員</span>';
+    }
+    const standbyBox=document.getElementById('standbyList');
+    if(standbyBox)standbyBox.innerHTML=standbyActive?(standbyList.map(p=>`<div class="arrangeMember" ${dragAttr} ondragstart="dragWar('${p.id}')">${memberRowV45(p,can,true)}${delBtn(p)}</div>`).join('')||'<div class="muted">目前沒有候補名單</div>'):'<div class="muted">A1～B3 排滿 30 人後，才會顯示候補名單。</div>';
+    const vertical=document.getElementById('verticalArrange');
+    if(vertical&&typeof SLOTS!=='undefined')vertical.innerHTML=SLOTS.map(slot=>{const members=list.filter(p=>p.slot===slot);return `<div class="arrangeSlot" ${can?`ondragover="allowDrop(event)" ondrop="dropToSlot(event,'${slot}')"`:''}><div class="arrangeHead">${slot}(${SLOT_POS[slot]})</div>${members.map(p=>`<div class="arrangeMember" ${dragAttr} ondragstart="dragWar('${p.id}')">${memberRowV45(p,can,false)}${delBtn(p)}</div>`).join('')||'<div class="empty">空位</div>'}${roleStatsV45(members)}</div>`;}).join('');
+    const horizontal=document.getElementById('horizontalArrange');
+    if(horizontal&&typeof SLOTS!=='undefined')horizontal.innerHTML=SLOTS.map(slot=>{const members=list.filter(p=>p.slot===slot);return `<div class="hrow"><div class="hlabel">${slot}</div><div class="hcontent">${members.map(p=>`<span class="tag ${typeof cls==='function'?cls(p.school):''}">${escV45(p.school)}</span>${escV45(p.name)}`).join('　　')||'空位'}</div></div>`;}).join('');
+    if(typeof renderCopyText==='function')renderCopyText();
+    try{if(document.getElementById('baiyeArrangeViewPage')?.classList.contains('active')&&typeof renderBaiyeArrangeView==='function')renderBaiyeArrangeView();}catch(e){}
+  };
+  try{renderBaiyeArrange=window.renderBaiyeArrange;}catch(e){}
+  setTimeout(()=>{try{window.renderBaiyeArrange();}catch(e){}},1200);
+})();
+</script>
+
 </body></html>
